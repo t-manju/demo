@@ -1,0 +1,3 @@
+vault:
+  secretPath: mede/datalake/default
+replicaCount: 1

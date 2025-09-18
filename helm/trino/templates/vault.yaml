@@ -1,0 +1,13 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: trino-test
+spec:
+  type: kv-v2
+  mount: secret
+  path: {{ .Values.vault.secretPath }}
+  destination:
+    name: trino-test
+    create: true
+  refreshAfter: 30s
+  vaultAuthRef: vault/vault-auth
