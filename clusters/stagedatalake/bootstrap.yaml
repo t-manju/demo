@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/t-manju/demo.git   # <-- Replace with your repo
     targetRevision: main                                     # Git branch
-    path: argocd-apps/helm/apps                           # Points to your apps/ Helm chart
+    path: helm/apps                           # Points to your apps/ Helm chart
   destination:
     server: https://kubernetes.default.svc                   # In-cluster API for Minikube
     namespace: argocd
