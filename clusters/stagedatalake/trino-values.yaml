@@ -60,17 +60,17 @@ coordinator:
         maxSurge: 25%
         maxUnavailable: 50%
 
-  jvm:
-    maxHeapSize: "8G"
-    gcMethod:
-      type: "UseG1GC"
-      g1:
-        heapRegionSize: "32M"
-  config:
-    memory:
-      heapHeadroomPerNode: "2GB"
-    query:
-      maxMemoryPerNode: "2GB"
+  # jvm:
+  #   maxHeapSize: "8G"
+  #   gcMethod:
+  #     type: "UseG1GC"
+  #     g1:
+  #       heapRegionSize: "32M"
+  # config:
+  #   memory:
+  #     heapHeadroomPerNode: "2GB"
+  #   query:
+  #     maxMemoryPerNode: "2GB"
 
   additionalVolumes:
     - name: generated-files
@@ -96,17 +96,17 @@ worker:
         maxSurge: 25%
         maxUnavailable: 50%
 
-  jvm:
-    maxHeapSize: "8G"
-    gcMethod:
-      type: "UseG1GC"
-      g1:
-        heapRegionSize: "32M"
-  config:
-    memory:
-      heapHeadroomPerNode: "2GB"
-    query:
-      maxMemoryPerNode: "2GB"
+  # jvm:
+  #   maxHeapSize: "8G"
+  #   gcMethod:
+  #     type: "UseG1GC"
+  #     g1:
+  #       heapRegionSize: "32M"
+  # config:
+  #   memory:
+  #     heapHeadroomPerNode: "2GB"
+  #   query:
+  #     maxMemoryPerNode: "2GB"
 
   additionalExposedPorts:
     extra-port:
@@ -264,7 +264,7 @@ resourceGroups:
 
 
 jmx:
-  enabled: true
+  enabled: false
   registryPort: 9080
   serverPort: 9081
   exporter:
@@ -286,13 +286,13 @@ serviceMonitor:
     prometheus: default
   interval: "1s"
 
-ingress:
-  enabled: true
-  hosts:
-    - host: trino.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
+# ingress:
+#   enabled: true
+#   hosts:
+#     - host: trino.local
+#       paths:
+#         - path: /
+#           pathType: ImplementationSpecific
 
 networkPolicy:
   enabled: true
