@@ -26,7 +26,7 @@ spec:
           helm:
             valueFiles:
               - $values/helm/trino/values.yaml
-              - {{ printf "$values/clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
+              - ../../clusters/{{`{{path.basename}}`}}/trino-values.yaml
         # 2. Reference repo to enable $values resolution
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{ .Values.source.targetRevision }}
