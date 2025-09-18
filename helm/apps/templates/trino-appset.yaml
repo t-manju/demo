@@ -24,14 +24,13 @@ spec:
         server: {{ .Values.destination.server }}
         namespace: {{ .Values.trino.namespace }}
       sources:
-        # First source: Trino Helm chart with cluster overrides
-        - repoURL: {{ .Values.source.repoURL }}
-          targetRevision: main
-          path: helm/trino
+        # First source: public Trino Helm chart with cluster overrides
+        - repoURL: https://trinodb.github.io/charts
+          chart: trino
+          targetRevision: 1.39.0
           helm:
             releaseName: {{ .Values.trino.appName }}
             valueFiles:
-              - values.yaml
               - {{ printf "../../clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
 
         # Second source: extra values (for AppSet templating)
