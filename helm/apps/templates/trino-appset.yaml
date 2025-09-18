@@ -8,7 +8,7 @@ spec:
         repoURL: {{ .Values.source.repoURL }}
         revision: {{ .Values.source.targetRevision }}
         files:
-          - path: clusters/*/trino-values.yaml
+          - path: clusters/*/trino-values.yaml   # points to the YAML files, not directories
   template:
     metadata:
       name: '{{`{{path.basename}}`}}-trino'
@@ -25,9 +25,9 @@ spec:
           path: helm/trino
           helm:
             valueFiles:
-              - $values/helm/trino/values.yaml
-              - $values/{{`{{path}}`}}   # Dynamic cluster override
-        # 2. Enable $values resolution
+              - $values/values.yaml
+              - {{ printf "$values/clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
+        # 2. Reference repo to enable $values resolution
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{ .Values.source.targetRevision }}
           ref: values
