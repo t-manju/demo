@@ -11,22 +11,17 @@ spec:
           - path: clusters/*/trino-values.yaml
   template:
     metadata:
-      name: '{{path.basename}}-trino'
-      labels:
-        app: trino
-      finalizers:
-        - resources-finalizer.argocd.argoproj.io
+      name: '{{`{{path.basename}}`}}-trino'
     spec:
       project: {{ .Values.project.name }}
       sources:
-        # Umbrella chart (your repo)
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{ .Values.source.targetRevision }}
           path: helm/trino
           helm:
             valueFiles:
               - $values/helm/trino/values.yaml
-              - $values/{{path}}   # cluster-specific trino-values.yaml
+              - $values/{{`{{path}}`}}
       destination:
         server: {{ .Values.destination.server }}
         namespace: {{ .Values.trino.namespace }}
