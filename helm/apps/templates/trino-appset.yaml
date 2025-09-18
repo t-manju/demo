@@ -10,7 +10,7 @@ spec:
         revision: main
         files:
           # Pull cluster-specific overrides for stagedatalake
-          - path: argocd-apps/clusters/stagedatalake/*.yaml
+          - path: clusters/stagedatalake/*.yaml
   template:
     metadata:
       name: {{ .Values.trino.appName }}
@@ -26,12 +26,12 @@ spec:
       sources:
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: main
-          path: argocd-apps/helm/trino
+          path: helm/trino
           helm:
             chart: trino
             valueFiles:
-              - argocd-apps/helm/apps/values.yaml                                      # global values
-              - argocd-apps/clusters/stagedatalake/trino-values.yaml                        # cluster-specific overrides
+              - helm/apps/values.yaml                                      # global values
+              - clusters/stagedatalake/trino-values.yaml                        # cluster-specific overrides
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: main
           ref: values
