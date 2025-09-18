@@ -8,11 +8,11 @@ spec:
     - git:
         repoURL: {{ .Values.source.repoURL }}
         revision: main
-        directories:
-          - path: clusters/stagedatalake
+        files:
+          - path: {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote}}
   template:
     metadata:
-      name: {{ .Values.trino.appName }}-{{path.basename}}
+      name: {{ .Values.trino.appName }}
     labels:
       app: {{ .Values.trino.appName }}
     finalizers:
@@ -27,10 +27,9 @@ spec:
         targetRevision: main
         path: helm/trino
         helm:
-          releaseName: {{ .Values.trino.appName }}-{{path.basename}}
+          releaseName: {{ .Values.trino.appName }}
           valueFiles:
-            - helm/trino/values.yaml
-            - {{path}}/trino-values.yaml
+            - {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder| quote}}
       syncPolicy:
         automated:
           prune: true
