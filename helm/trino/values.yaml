@@ -8,3 +8,4 @@ global:
 server:
   node:
     environment: "{{ .Values.global.env }}_{{ .Values.global.region }}"
+  workers: 1
