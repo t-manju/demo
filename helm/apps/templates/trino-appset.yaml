@@ -1,48 +1,33 @@
 apiVersion: argoproj.io/v1alpha1
-kind: ApplicationSet
+kind: Application
 metadata:
   name: trino
   namespace: argocd
+
 spec:
-  generators:
-    - git:
-        repoURL: {{ .Values.source.repoURL }}
-        revision: main
-        files:
-          - path: {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
+  project: {{ .Values.project.name }}
+  destination:
+    server: {{ .Values.destination.server }}
+    namespace: {{ .Values.trino.namespace }}
+  sources:
+    # First source: public Trino Helm chart with cluster overrides
+    - repoURL: https://trinodb.github.io/charts
+      chart: trino
+      targetRevision: 1.39.0
+      helm:
+        releaseName: {{ .Values.trino.appName }}
+        valueFiles:
+          - {{ printf "$values/clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
 
-  template:
-    metadata:
-      name: {{ .Values.trino.appName }}-{{ .Values.source.clusterFolder }}
-    labels:
-      app: {{ .Values.trino.appName }}-{{ .Values.source.clusterFolder }}
-    finalizers:
-      - resources-finalizer.argocd.argoproj.io
-    spec:
-      project: {{ .Values.project.name }}
-      destination:
-        server: {{ .Values.destination.server }}
-        namespace: {{ .Values.trino.namespace }}
-      sources:
-        # First source: public Trino Helm chart with cluster overrides
-        - repoURL: https://trinodb.github.io/charts
-          chart: trino
-          targetRevision: 1.39.0
-          helm:
-            releaseName: {{ .Values.trino.appName }}
-            valueFiles:
-              - {{ printf "../../clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
+    - repoURL: {{ .Values.source.repoURL }}
+      targetRevision: main
+      ref: values
 
-        # Second source: extra values (for AppSet templating)
-        - repoURL: {{ .Values.source.repoURL }}
-          targetRevision: main
-          ref: values
-
-      syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
-        syncOptions:
-          - CreateNamespace=true
-          - PrunePropagationPolicy=foreground
-          - Validate=false
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - Validate=false
