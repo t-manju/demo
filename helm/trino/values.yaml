@@ -8,7 +8,7 @@ vaultSecret:
   enabled: false
   secretFile: ""
 
-trino-public:
+trino:
   jmx:
     enabled: true
     registryPort: 9080
@@ -20,8 +20,7 @@ trino-public:
       port: 5556
       configProperties: |
         startDelaySeconds: 0
-        # Corrected templating path
-        hostPort: 127.0.0.1:{{ .Values.trino-public.jmx.registryPort }}
+        hostPort: 127.0.0.1:{{ .Values.trino.jmx.registryPort }}
         rules:
           - pattern: 'trino.memory*'
           - pattern: 'trino.execution<name=QueryManager>*'
