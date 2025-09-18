@@ -15,7 +15,7 @@ spec:
     spec:
       project: default
       source:
-        - repoURL: {{ .Values.source.repoURL }}
+        - repoURL: {{ $.Values.source.repoURL }}
           targetRevision: main
           path: helm/trino
           helm:
