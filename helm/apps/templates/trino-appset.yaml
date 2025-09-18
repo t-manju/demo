@@ -19,13 +19,13 @@ spec:
     spec:
       project: default
       source:
-        - repoURL: 'https://github.com/t-manju/demo/tree/main/helm/trino'
-          targetRevision: main
-          path: helm/trino
-          helm:
-            valueFiles:
-            - helm/trino/values.yaml
-            - '{{path}}/trino-values.yaml'
+        repoURL: {{ .Values.source.repoURL }}
+        targetRevision: main
+        path: helm/trino
+        helm:
+          valueFiles:
+          - helm/trino/values.yaml
+          - '{{path}}/trino-values.yaml'
       destination:
         server: {{ .Values.destination.server }}
         namespace: {{ .Values.trino.namespace }}
