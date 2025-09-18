@@ -108,48 +108,48 @@ worker:
   #   query:
   #     maxMemoryPerNode: "2GB"
 
-  additionalExposedPorts:
-    extra-port:
-      servicePort: 9483
-      name: extra-port
-      port: 9483
-      protocol: TCP
+  # additionalExposedPorts:
+  #   extra-port:
+  #     servicePort: 9483
+  #     name: extra-port
+  #     port: 9483
+  #     protocol: TCP
 
-  annotations:
-    custom/name: value
+  # annotations:
+  #   custom/name: value
 
-  topologySpreadConstraints:
-    - maxSkew: 1
-      topologyKey: "kubernetes.io/hostname"
-      whenUnsatisfiable: "ScheduleAnyway"
-      labelSelector:
-        matchLabels:
-          app.kubernetes.io/name: trino
-          app.kubernetes.io/component: worker
-    - maxSkew: 1
-      topologyKey: "topology.kubernetes.io/zone"
-      whenUnsatisfiable: "ScheduleAnyway"
-      labelSelector:
-        matchLabels:
-          app.kubernetes.io/name: trino
-          app.kubernetes.io/component: worker
+  # topologySpreadConstraints:
+  #   - maxSkew: 1
+  #     topologyKey: "kubernetes.io/hostname"
+  #     whenUnsatisfiable: "ScheduleAnyway"
+  #     labelSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/name: trino
+  #         app.kubernetes.io/component: worker
+  #   - maxSkew: 1
+  #     topologyKey: "topology.kubernetes.io/zone"
+  #     whenUnsatisfiable: "ScheduleAnyway"
+  #     labelSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/name: trino
+  #         app.kubernetes.io/component: worker
 
-commonLabels:
-  extra-label: extra-value
+# commonLabels:
+#   extra-label: extra-value
 
-initContainers:
-  coordinator:
-    - name: init-coordinator
-      image: busybox:1.36
-      imagePullPolicy: IfNotPresent
-      command: ['sh', '-c', "cat /etc/trino/certificates/tls.crt /etc/trino/certificates/tls.key > /etc/trino/generated/tls.pem"]
-      volumeMounts:
-        - name: certificates
-          readOnly: true
-          mountPath: "/etc/trino/certificates"
-        - name: generated-files
-          readOnly: false
-          mountPath: "/etc/trino/generated"
+# initContainers:
+#   coordinator:
+#     - name: init-coordinator
+#       image: busybox:1.36
+#       imagePullPolicy: IfNotPresent
+#       command: ['sh', '-c', "cat /etc/trino/certificates/tls.crt /etc/trino/certificates/tls.key > /etc/trino/generated/tls.pem"]
+#       volumeMounts:
+#         - name: certificates
+#           readOnly: true
+#           mountPath: "/etc/trino/certificates"
+#         - name: generated-files
+#           readOnly: false
+#           mountPath: "/etc/trino/generated"
 
 accessControl:
   type: configmap
