@@ -20,9 +20,10 @@ trino:
       port: 5556
       configProperties: |
         startDelaySeconds: 0
-        hostPort: 127.0.0.1:{{ .jmx.registryPort }}
+        hostPort: 127.0.0.1:9080
         rules:
           - pattern: 'trino.memory*'
           - pattern: 'trino.execution<name=QueryManager>*'
           - pattern: 'trino.execution<name=ClusterSizeMonitor>*'
+
 
