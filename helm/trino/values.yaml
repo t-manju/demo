@@ -1,18 +1,10 @@
 accessControl:
-  enabled: true
+  enabled: false # This can be overridden
   rules:
-    rules.json: |
-      {
-        "catalogs": [
-          {
-            "user": "analytics-user",
-            "allow": "read-only"
-          }
-        ]
-      }
+    rules.json: {} # Add this line to ensure the path exists
 
 vaultSecret:
-  enabled: true
+  enabled: false
   secretFile: |
     # Your vault secret content goes here
     secret-key: super-secret-value
