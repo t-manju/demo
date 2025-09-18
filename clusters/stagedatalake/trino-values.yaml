@@ -9,7 +9,7 @@ global:
 server:
   node:
     environment: "{{ .Values.global.env }}_{{ .Values.global.region }}"
-  workers: 0
+  workers: 1
   config:
     https:
       enabled: true
