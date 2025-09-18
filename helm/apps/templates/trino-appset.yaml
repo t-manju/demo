@@ -12,7 +12,7 @@ spec:
           - path: clusters/stagedatalake/*.yaml
   template:
     metadata:
-      name: {{ .Values.trino.appName }}
+      name: {{ .Values.trino.appName }}-{{path.basename}}
     labels:
       app: {{ .Values.trino.appName }}
     finalizers:
