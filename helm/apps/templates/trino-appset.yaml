@@ -6,39 +6,35 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: {{ .Values.source.repoURL }}       # Use SSH for ArgoCD
+        repoURL: {{ .Values.source.repoURL }}
         revision: main
         files:
-          # Pull cluster-specific overrides for stagedatalake
           - path: clusters/stagedatalake/*.yaml
   template:
     metadata:
-      name: {{ .Values.trino.appName }}
-      labels:
-        app: {{ .Values.trino.appName }}
-      finalizers:
-        - resources-finalizer.argocd.argoproj.io
+      name: {{ .Values.trino.appName }}-{{path.basename}}
+    labels:
+      app: {{ .Values.trino.appName }}
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
     spec:
       project: {{ .Values.project.name }}
       destination:
         server: {{ .Values.destination.server }}
         namespace: {{ .Values.trino.namespace }}
-      sources:
-        - repoURL: {{ .Values.source.repoURL }}
-          targetRevision: main
-          path: helm/trino
-          helm:
-            chart: trino
-            valueFiles:
-              - values.yaml                                      # global values
-              - ../../clusters/stagedatalake/trino-values.yaml                     # cluster-specific overrides
-        - repoURL: {{ .Values.source.repoURL }}
-          targetRevision: main
-          ref: values
+      source:
+        repoURL: {{ .Values.source.repoURL }}
+        targetRevision: main
+        path: helm/trino                       # local folder chart
+        helm:
+          releaseName: {{ .Values.trino.appName }}
+          valueFiles:
+            - values.yaml
+            - ../../clusters/stagedatalake/trino-values.yaml
       syncPolicy:
-        # automated:
-        #   prune: true
-        #   selfHeal: true
+        automated:
+          prune: true
+          selfHeal: true
         syncOptions:
           - CreateNamespace=true
           - PrunePropagationPolicy=foreground
