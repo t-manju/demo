@@ -7,5 +7,5 @@ metadata:
     {{- include "trino.labels" . | nindent 4 }}
 data:
   rules.json: |-
-    {{- .Values.accessControl.rules.rules.json | toJson | nindent 4 }}
+    {{- .Values.accessControl.rules.rules.json | toJson | nindent 8 }}
 {{- end }}
