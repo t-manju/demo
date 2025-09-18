@@ -1,0 +1,19 @@
+# General project and destination config
+project:
+  name: default
+
+destination:
+  server: https://kubernetes.default.svc  # In-cluster Kubernetes API
+  namespace: trino                        # Default namespace for Trino
+
+source:
+  repoURL: https://github.com/t-manju/config-store.git  # Replace with your repo
+  targetRevision: main                                    # Git branch
+  clusterFolder: stagedatalake                            # Which cluster folder to use (stage/prod/etc.)
+
+# Trino App settings
+trino:
+  enabled: true
+  appName: trino-app
+  namespace: trino
+  chartVersion: 1.39.0   # Default public Trino Helm chart version (override in cluster values if needed)
