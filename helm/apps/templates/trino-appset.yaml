@@ -23,7 +23,7 @@ spec:
             - $values/helm/trino/values.yaml          
             - {{ printf "$values/clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
         - repoURL: {{ .Values.source.repoURL }}
-          targetRevision:   
+          targetRevision: main
           ref: values
       destination:
         server: {{ .Values.destination.server }}
