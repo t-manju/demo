@@ -29,7 +29,7 @@ spec:
         helm:
           releaseName: {{ .Values.trino.appName }}
           valueFiles:
-            - {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder| quote}}
+            - {{ printf "../../clusters/%s/trino-values.yaml" .Values.source.clusterFolder| quote}}
       syncPolicy:
         automated:
           prune: true
