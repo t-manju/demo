@@ -25,7 +25,7 @@ spec:
         helm:
           valueFiles:
           - helm/trino/values.yaml
-          - '{{path}}/trino-values.yaml'
+          - '{{.path.path}}/trino-values.yaml'
       destination:
         server: {{ .Values.destination.server }}
         namespace: {{ .Values.trino.namespace }}
