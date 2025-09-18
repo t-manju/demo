@@ -8,8 +8,8 @@ spec:
     - git:
         repoURL: {{ .Values.source.repoURL }}
         revision: main
-        files:
-          - path: clusters/stagedatalake/*.yaml
+        directories:
+          - path: clusters/stagedatalake
   template:
     metadata:
       name: {{ .Values.trino.appName }}-{{path.basename}}
@@ -25,12 +25,12 @@ spec:
       source:
         repoURL: {{ .Values.source.repoURL }}
         targetRevision: main
-        path: helm/trino                       # local folder chart
+        path: helm/trino
         helm:
           releaseName: {{ .Values.trino.appName }}-{{path.basename}}
           valueFiles:
-            - values.yaml
-            - ../../clusters/stagedatalake/trino-values.yaml
+            - helm/trino/values.yaml
+            - {{path}}/trino-values.yaml
       syncPolicy:
         automated:
           prune: true
