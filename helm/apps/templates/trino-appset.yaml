@@ -10,6 +10,7 @@ spec:
         revision: main
         files:
           - path: {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
+
   template:
     metadata:
       name: {{ .Values.trino.appName }}-{{ .Values.source.clusterFolder }}
@@ -22,14 +23,22 @@ spec:
       destination:
         server: {{ .Values.destination.server }}
         namespace: {{ .Values.trino.namespace }}
-      source:
-        repoURL: https://trinodb.github.io/charts   # public Helm chart repo
-        chart: trino
-        targetRevision: 1.39.0
-        helm:
-          releaseName: {{ .Values.trino.appName }}
-          valueFiles:
-            - {{ printf "../../clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
+      sources:
+        # First source: Trino Helm chart with cluster overrides
+        - repoURL: {{ .Values.source.repoURL }}
+          targetRevision: main
+          path: helm/trino
+          helm:
+            releaseName: {{ .Values.trino.appName }}
+            valueFiles:
+              - values.yaml
+              - {{ printf "../../clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
+
+        # Second source: extra values (for AppSet templating)
+        - repoURL: {{ .Values.source.repoURL }}
+          targetRevision: main
+          ref: values
+
       syncPolicy:
         automated:
           prune: true
