@@ -27,7 +27,7 @@ spec:
         targetRevision: main
         path: helm/trino                       # local folder chart
         helm:
-          releaseName: {{ .Values.trino.appName }}
+          releaseName: {{ .Values.trino.appName }}-{{path.basename}}
           valueFiles:
             - values.yaml
             - ../../clusters/stagedatalake/trino-values.yaml
