@@ -12,9 +12,9 @@ spec:
           - path: {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote}}
   template:
     metadata:
-      name: {{ .Values.trino.appName }}
+      name: {{ .Values.trino.appName }}-{{ .Values.source.clusterFolder }}
     labels:
-      app: {{ .Values.trino.appName }}
+      app: {{ .Values.trino.appName }}-{{ .Values.source.clusterFolder }}
     finalizers:
       - resources-finalizer.argocd.argoproj.io
     spec:
