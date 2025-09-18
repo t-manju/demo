@@ -16,16 +16,14 @@ vaultSecret:
     another-key: another-value
 
 trino:
-
-  # Add under coordinator / Trino pod mounts
   additionalVolumes:
     - name: access-control
       configMap:
-        name: {{ include "trino.fullname" . }}-access-control  # Helm template reference
+        name: stagedatalake-trino-access-control
 
   additionalVolumeMounts:
     - name: access-control
-      mountPath: /etc/trino/access-control   # path inside pod
+      mountPath: /etc/trino/access-control
       readOnly: true
 
   jmx:
