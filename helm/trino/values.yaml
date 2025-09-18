@@ -1,8 +1,13 @@
-# Corrected helm/trino/values.yaml
 accessControl:
-  enabled: false
+  enabled: true
   rules:
-    rules.json: {}
+    rules.json:
+      catalogs:
+        - group: admin
+          allow: all
+      schemas:
+        - group: admin
+          allow: read-only
 
 vaultSecret:
   enabled: true
@@ -11,6 +16,18 @@ vaultSecret:
     another-key: another-value
 
 trino:
+
+  # Add under coordinator / Trino pod mounts
+  additionalVolumes:
+    - name: access-control
+      configMap:
+        name: {{ include "trino.fullname" . }}-access-control  # Helm template reference
+
+  additionalVolumeMounts:
+    - name: access-control
+      mountPath: /etc/trino/access-control   # path inside pod
+      readOnly: true
+
   jmx:
     enabled: true
     registryPort: 9080

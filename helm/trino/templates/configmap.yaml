@@ -6,6 +6,6 @@ metadata:
   labels:
     {{- include "trino.labels" . | nindent 4 }}
 data:
-  rules.json: |
-    {{- .Values.accessControl.rules.rules.json | nindent 4 }}
+  rules.json: |-
+    {{- .Values.accessControl.rules.rules.json | toJson | nindent 4 }}
 {{- end }}
