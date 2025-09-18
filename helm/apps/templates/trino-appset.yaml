@@ -1,0 +1,43 @@
+{{- if .Values.trino.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: {{ .Values.trino.appName }}
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  generators:
+    - git:
+        repoURL: {{ .Values.source.repoURL }}
+        revision: {{ .Values.source.targetRevision }}
+        files:
+          # Optional: cluster-specific values for the generator (used for AppSet templating)
+          - path: argocd-applications/clusters/{{ .Values.source.clusterFolder }}/trino-values.yaml
+  template:
+    metadata:
+      name: {{ .Values.trino.appName }}
+      labels:
+        app: {{ .Values.trino.appName }}
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: {{ .Values.project.name }}
+      destination:
+        server: {{ .Values.destination.server }}
+        namespace: {{ .Values.trino.namespace }}
+      sources:
+        - repoURL: {{ .Values.source.repoURL }}
+          targetRevision: {{ .Values.source.targetRevision }}
+          path: argocd-applications/helm/trino   # local umbrella chart
+          helm:
+            releaseName: trino
+            valueFiles:
+              - argocd-applications/helm/trino/values.yaml
+              - argocd-applications/clusters/{{ .Values.source.clusterFolder }}/trino-values.yaml
+      syncPolicy:
+        syncOptions:
+          - PrunePropagationPolicy=foreground
+          - Validate=false
+          - CreateNamespace=true
+{{- end }}
