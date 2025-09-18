@@ -22,7 +22,7 @@ spec:
           helm:
             valueFiles:
               - $values/helm/trino/values.yaml
-              - $values/{{`{{path}}`}}
+              - {{ printf "$values/clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
 
         # 2. Reference repo to enable $values
         - repoURL: {{ .Values.source.repoURL }}
