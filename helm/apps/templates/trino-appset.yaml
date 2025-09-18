@@ -29,6 +29,7 @@ spec:
         helm:
           releaseName: {{ .Values.trino.appName }}
           valueFiles:
+            - ../../helm/apps/values.yaml
             - {{ printf "../../clusters/%s/trino-values.yaml" .Values.source.clusterFolder| quote}}
       syncPolicy:
         automated:
