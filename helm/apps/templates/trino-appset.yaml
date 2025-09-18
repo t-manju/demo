@@ -1,19 +1,16 @@
-{{- if .Values.trino.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: {{ .Values.trino.appName }}
+  name: trino
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
 spec:
   generators:
     - git:
-        repoURL: {{ .Values.source.repoURL }}
-        revision: {{ .Values.source.targetRevision }}
+        repoURL: {{ .Values.source.repoURL }}       # Use SSH for ArgoCD
+        revision: main
         files:
-          # Optional: cluster-specific values for the generator (used for AppSet templating)
-          - path: argocd-applications/clusters/{{ .Values.source.clusterFolder }}/trino-values.yaml
+          # Pull cluster-specific overrides for stagedatalake
+          - path: argocd-apps/clusters/stagedatalake/*.yaml
   template:
     metadata:
       name: {{ .Values.trino.appName }}
@@ -28,16 +25,21 @@ spec:
         namespace: {{ .Values.trino.namespace }}
       sources:
         - repoURL: {{ .Values.source.repoURL }}
-          targetRevision: {{ .Values.source.targetRevision }}
-          path: argocd-applications/helm/trino   # local umbrella chart
+          targetRevision: main
+          path: argocd-apps/helm/trino
           helm:
-            releaseName: trino
+            chart: trino
             valueFiles:
-              - argocd-applications/helm/trino/values.yaml
-              - argocd-applications/clusters/{{ .Values.source.clusterFolder }}/trino-values.yaml
+              - argocd-apps/helm/apps/values.yaml                                      # global values
+              - argocd-apps/clusters/stagedatalake/trino-values.yaml                        # cluster-specific overrides
+        - repoURL: {{ .Values.source.repoURL }}
+          targetRevision: main
+          ref: values
       syncPolicy:
+        # automated:
+        #   prune: true
+        #   selfHeal: true
         syncOptions:
+          - CreateNamespace=true
           - PrunePropagationPolicy=foreground
           - Validate=false
-          - CreateNamespace=true
-{{- end }}

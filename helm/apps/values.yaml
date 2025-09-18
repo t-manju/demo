@@ -7,7 +7,7 @@ destination:
   namespace: trino                        # Default namespace for Trino
 
 source:
-  repoURL: https://github.com/t-manju/config-store.git  # Replace with your repo
+  repoURL: https://github.com/t-manju/demo.git  # Replace with your repo
   targetRevision: main                                    # Git branch
   clusterFolder: stagedatalake                            # Which cluster folder to use (stage/prod/etc.)
 

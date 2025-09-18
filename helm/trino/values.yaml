@@ -1,3 +1,10 @@
-vault:
-  secretPath: mede/datalake/default
-replicaCount: 2
+# vault:
+#   secretPath: mede/datalake/default
+# replicaCount: 2
+global:
+  env: "dev"
+  region: "region_test"
+
+server:
+  node:
+    environment: "{{ .Values.global.env }}_{{ .Values.global.region }}"
