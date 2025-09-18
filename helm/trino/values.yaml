@@ -263,23 +263,6 @@ resourceGroups:
     }
 
 
-jmx:
-  enabled: false
-  registryPort: 9080
-  serverPort: 9081
-  exporter:
-    enabled: true
-    image: bitnami/jmx-exporter:1.0.1
-    pullPolicy: Always
-    port: 5556
-    configProperties: |
-      startDelaySeconds: 0
-      hostPort: 127.0.0.1:{{- .Values.jmx.registryPort }}
-      rules:
-        - pattern: 'trino.memory*'
-        - pattern: 'trino.execution<name=QueryManager>*'
-        - pattern: 'trino.execution<name=ClusterSizeMonitor>*'
-
 serviceMonitor:
   enabled: true
   labels:
