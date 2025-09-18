@@ -12,19 +12,22 @@ spec:
   template:
     metadata:
       name: '{{`{{path.basename}}`}}-trino'
+      labels:
+        app: '{{`{{path.basename}}`}}-trino'
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
     spec:
       project: {{ .Values.project.name }}
       sources:
-        # 1. Main umbrella chart (helm/trino)
+        # 1. Main Trino Helm chart
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{ .Values.source.targetRevision }}
           path: helm/trino
           helm:
             valueFiles:
               - $values/helm/trino/values.yaml
-              - $values/{{`{{path}}`}}
-
-        # 2. Reference repo to enable $values
+              - $values/{{`{{path}}`}}   # Dynamic cluster override
+        # 2. Enable $values resolution
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{ .Values.source.targetRevision }}
           ref: values
