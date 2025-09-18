@@ -11,7 +11,7 @@ spec:
         - path: {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
   template:
     metadata:
-      name: '{{.path.basename}}-trino'
+      name: '{{ .Values.source.clusterFolder }}-trino'
     spec:
       project: default
       source:
