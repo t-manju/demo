@@ -1,0 +1,11 @@
+apiVersion: v2
+name: trino
+description: Umbrella chart for Trino
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: trino
+    version: 1.39.0          # Default version; can be overridden per cluster
+    repository: https://trinodb.github.io/charts
