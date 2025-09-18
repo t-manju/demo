@@ -5,8 +5,10 @@ accessControl:
     rules.json: {}
 
 vaultSecret:
-  enabled: false
-  secretFile: ""
+  enabled: true
+  secretFile: |
+    secret-key: dev-secret-value
+    another-key: another-value
 
 trino:
   jmx:

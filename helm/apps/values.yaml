@@ -14,6 +14,5 @@ source:
 # Trino App settings
 trino:
   enabled: true
-  appName: trino-app
   namespace: trino
   chartVersion: 1.39.0   # Default public Trino Helm chart version (override in cluster values if needed)
