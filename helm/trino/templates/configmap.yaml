@@ -1,0 +1,11 @@
+{{- if .Values.accessControl.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "trino.fullname" . }}-access-control
+  labels:
+    {{- include "trino.labels" . | nindent 4 }}
+data:
+  rules.json: |
+    {{- .Values.accessControl.rules.rules.json | nindent 4 }}
+{{- end }}

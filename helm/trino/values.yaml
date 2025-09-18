@@ -1,16 +1,38 @@
-jmx:
+accessControl:
   enabled: true
-  registryPort: 9080
-  serverPort: 9081
-  exporter:
+  rules:
+    rules.json: |
+      {
+        "catalogs": [
+          {
+            "user": "analytics-user",
+            "allow": "read-only"
+          }
+        ]
+      }
+
+vaultSecret:
+  enabled: true
+  secretFile: |
+    # Your vault secret content goes here
+    secret-key: super-secret-value
+    another-key: another-value
+
+trino-public:
+  # This section configures the public Trino chart dependency
+  jmx:
     enabled: true
-    image: bitnamisecure/jmx-exporter:latest
-    pullPolicy: Always
-    port: 5556
-    configProperties: |
-      startDelaySeconds: 0
-      hostPort: 127.0.0.1:{{- .Values.jmx.registryPort }}
-      rules:
-        - pattern: 'trino.memory*'
-        - pattern: 'trino.execution<name=QueryManager>*'
-        - pattern: 'trino.execution<name=ClusterSizeMonitor>*'
+    registryPort: 9080
+    serverPort: 9081
+    exporter:
+      enabled: true
+      image: bitnamisecure/jmx-exporter:latest
+      pullPolicy: Always
+      port: 5556
+      configProperties: |
+        startDelaySeconds: 0
+        hostPort: 127.0.0.1:{{ .Values.jmx.registryPort }}
+        rules:
+          - pattern: 'trino.memory*'
+          - pattern: 'trino.execution<name=QueryManager>*'
+          - pattern: 'trino.execution<name=ClusterSizeMonitor>*'

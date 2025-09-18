@@ -9,3 +9,4 @@ dependencies:
   - name: trino
     version: 1.39.0          # Default version; can be overridden per cluster
     repository: https://trinodb.github.io/charts
+    alias: trino-public # Add this alias for a clear reference
