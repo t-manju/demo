@@ -1,17 +1,14 @@
+# Corrected helm/trino/values.yaml
 accessControl:
-  enabled: false # This can be overridden
+  enabled: false
   rules:
-    rules.json: {} # Add this line to ensure the path exists
+    rules.json: {}
 
 vaultSecret:
   enabled: false
-  secretFile: |
-    # Your vault secret content goes here
-    secret-key: super-secret-value
-    another-key: another-value
+  secretFile: ""
 
 trino-public:
-  # This section configures the public Trino chart dependency
   jmx:
     enabled: true
     registryPort: 9080
@@ -23,7 +20,8 @@ trino-public:
       port: 5556
       configProperties: |
         startDelaySeconds: 0
-        hostPort: 127.0.0.1:{{ .Values.jmx.registryPort }}
+        # Corrected templating path
+        hostPort: 127.0.0.1:{{ .Values.trino-public.jmx.registryPort }}
         rules:
           - pattern: 'trino.memory*'
           - pattern: 'trino.execution<name=QueryManager>*'

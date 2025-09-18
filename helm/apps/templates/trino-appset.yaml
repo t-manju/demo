@@ -1,19 +1,24 @@
+# Corrected helm/apps/templates/trino-appset.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: trino
 spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
     - git:
         repoURL: {{ .Values.source.repoURL }}
         revision: main
-        files:
-        - path: {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
+        # CHANGE: Use the 'directories' generator to access the path variable.
+        directories:
+          - path: clusters/{{ .Values.source.clusterFolder }}
   template:
     metadata:
-      name: '{{ .Values.source.clusterFolder }}-trino'
+      # Now you can use path.basename to get 'stagedatalake'.
+      name: '{{path.basename}}-trino'
       labels:
-        app: '{{ .Values.source.clusterFolder }}-trino'
+        app: '{{path.basename}}-trino'
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
@@ -23,9 +28,14 @@ spec:
         targetRevision: main
         path: helm/trino
         helm:
+          # Use path.basename for a unique release name.
+          releaseName: '{{path.basename}}-trino'
           valueFiles:
-          - values.yaml
-          - ../../clusters/{{ .Values.source.clusterFolder }}/trino-values.yaml
+            # The path to your chart's own values.yaml.
+            - values.yaml
+            # The path to the cluster-specific values file.
+            # `../../` goes up to the repo root, and `path.basename` points to the folder.
+            - ../../clusters/{{ .Values.source.clusterFolder }}/trino-values.yaml
       destination:
         server: {{ .Values.destination.server }}
         namespace: {{ .Values.trino.namespace }}
