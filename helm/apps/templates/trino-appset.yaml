@@ -1,45 +1,40 @@
-# Corrected helm/apps/templates/trino-appset.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: trino
 spec:
-  goTemplate: true
-  goTemplateOptions: ["missingkey=error"]
   generators:
     - git:
         repoURL: {{ .Values.source.repoURL }}
-        revision: main
-        # CHANGE: Use the 'directories' generator to access the path variable.
-        directories:
-          - path: clusters/{{ .Values.source.clusterFolder }}
+        revision: {{ .Values.source.targetRevision }}
+        files:
+          - path: clusters/*/trino-values.yaml
   template:
     metadata:
-      # Now you can use path.basename to get 'stagedatalake'.
       name: '{{path.basename}}-trino'
       labels:
-        app: '{{path.basename}}-trino'
+        app: trino
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
-      project: default
-      source:
-        repoURL: {{ .Values.source.repoURL }}
-        targetRevision: main
-        path: helm/trino
-        helm:
-          # Use path.basename for a unique release name.
-          releaseName: '{{path.basename}}-trino'
-          valueFiles:
-            # The path to your chart's own values.yaml.
-            - values.yaml
-            # The path to the cluster-specific values file.
-            # `../../` goes up to the repo root, and `path.basename` points to the folder.
-            - ../../clusters/{{ .Values.source.clusterFolder }}/trino-values.yaml
+      project: {{ .Values.project.name }}
+      sources:
+        # Umbrella chart (your repo)
+        - repoURL: {{ .Values.source.repoURL }}
+          targetRevision: {{ .Values.source.targetRevision }}
+          path: helm/trino
+          helm:
+            valueFiles:
+              - $values/helm/trino/values.yaml
+              - $values/{{path}}   # cluster-specific trino-values.yaml
       destination:
         server: {{ .Values.destination.server }}
         namespace: {{ .Values.trino.namespace }}
-      syncOptions:
-        - CreateNamespace=true
-        - PrunePropagationPolicy=foreground
-        - Validate=false
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - PrunePropagationPolicy=foreground
+          - Validate=false
