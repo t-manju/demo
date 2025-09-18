@@ -30,8 +30,8 @@ spec:
           helm:
             chart: trino
             valueFiles:
-              - helm/apps/values.yaml                                      # global values
-              - clusters/stagedatalake/trino-values.yaml                        # cluster-specific overrides
+              - values.yaml                                      # global values
+              - ../../clusters/stagedatalake/trino-values.yaml                     # cluster-specific overrides
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: main
           ref: values
