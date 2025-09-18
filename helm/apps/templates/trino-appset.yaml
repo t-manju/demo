@@ -24,7 +24,7 @@ spec:
         path: helm/trino
         helm:
           valueFiles:
-          - helm/trino/values.yaml
+          - values.yaml
           - {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
       destination:
         server: {{ .Values.destination.server }}
