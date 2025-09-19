@@ -16,6 +16,7 @@ vaultSecret:
     another-key: another-value
 
 trino:
+  version: 1.39.0
   server:
     node:
       environment: "dev_region_test"   # computed manually
