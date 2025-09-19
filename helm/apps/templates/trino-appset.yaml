@@ -9,25 +9,24 @@ spec:
         repoURL: https://github.com/t-manju/demo.git
         revision: main
         files:
-          - path: clusters/*/bootstrap.yaml   # scans all cluster bootstrap files
+          - path: clusters/*/bootstrap.yaml
   template:
     metadata:
-      name: '{{name}}'                       # generated Application name
+      name: '{{name}}'
     spec:
       project: default
       source:
-        repoURL: '{{repoURL}}'               # from bootstrap.yaml
-        chart: '{{chart}}'                    # wrapper chart: helm/trino
-        targetRevision: '{{version}}'        # wrapper chart version
+        repoURL: '{{repoURL}}'
+        chart: '{{chart}}'
+        targetRevision: '{{version}}'
         helm:
-          dependencyUpdate: true             # update dependencies (Trino chart)
+          dependencyUpdate: true
           values: |
             trino:
-              dependencyVersion: '{{dependencyVersionOverride}}'   # cluster Helm version
+              dependencyVersion: '{{dependencyVersionOverride}}'
           valueFiles:
-            {{- range $file := .valueFiles }}
-            - $values/{{ $file }}
-            {{- end }}
+            - $values/helm/trino/values.yaml
+            - $values/clusters/stagedatalake/trino-values.yaml
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{namespace}}'
