@@ -16,10 +16,6 @@ vaultSecret:
     another-key: another-value
 
 trino:
-  server:
-    node:
-      environment: "dev_region_test"   # computed manually
-    workers: 1
   additionalVolumes:
     - name: access-control
       configMap:
