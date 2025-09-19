@@ -1,8 +1,0 @@
-global:
-  env: "dev"
-  region: "region_test"
-
-server:
-  node:
-    environment: "dev_region_test"   # computed manually
-  workers: 3
