@@ -14,15 +14,15 @@ spec:
     repoURL: https://github.com/t-manju/demo.git   # <-- Replace with your repo
     targetRevision: main                                     # Git branch
     path: helm/apps                           # Points to your apps/ Helm 
-    helm:
-      values: |
-        global:
-          env: "dev"
-          region: "region_test"
-        server:
-          node:
-            environment: "dev_region_test"   # computed manually
-          workers: 1
+    # helm:
+    #   values: |
+    #       global:
+    #         env: "dev"
+    #         region: "region_test"
+    #       server:
+    #         node:
+    #           environment: "dev_region_test"   # computed manually
+    #         workers: 1
   syncPolicy:
     automated:
       prune: true
