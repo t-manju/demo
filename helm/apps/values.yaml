@@ -15,4 +15,4 @@ source:
 trino:
   enabled: true
   namespace: trino
-  chartVersion: 1.39.0   # Default public Trino Helm chart version (override in cluster values if needed)
+  Version: 1.39.0   # Default public Trino Helm chart version (override in cluster values if needed)
