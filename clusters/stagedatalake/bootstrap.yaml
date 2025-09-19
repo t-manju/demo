@@ -1,31 +1,35 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: trino-apps
+  name: trino-stage
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   destination:
-    server: https://kubernetes.default.svc                   # In-cluster API for Minikube
-    namespace: argocd
+    server: https://kubernetes.default.svc
+    namespace: trino        # Deploy Trino in its own namespace
   source:
-    repoURL: https://github.com/t-manju/demo.git   # <-- Replace with your repo
-    targetRevision: main                                     # Git branch
-    path: helm/apps                           # Points to your apps/ Helm 
-    # helm:
-    #   values: |
-    #       global:
-    #         env: "dev"
-    #         region: "region_test"
-    #       server:
-    #         node:
-    #           environment: "dev_region_test"   # computed manually
-    #         workers: 1
+    repoURL: https://github.com/t-manju/demo.git
+    targetRevision: main
+    chart: trino            # Wrapper chart
+    # Pin the wrapper chart version if needed
+    version: 0.1.0
+    helm:
+      dependencyUpdate: true
+      # Override the dependency chart version (upstream Trino chart)
+      values: |
+        trino:
+          dependencyVersion: 1.39.0  # Stage cluster Helm chart version
+      valueFiles:
+        - $values/helm/trino/values.yaml
+        - $values/clusters/stagedatalake/trino-values.yaml
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - PrunePropagationPolicy=foreground
+      - CreateNamespace=true

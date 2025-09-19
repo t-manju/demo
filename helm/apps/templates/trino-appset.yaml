@@ -2,42 +2,35 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: trino
+  namespace: argocd
 spec:
   generators:
     - git:
-        repoURL: {{ .Values.source.repoURL }}
-        revision: {{ .Values.source.targetRevision }}
+        repoURL: https://github.com/t-manju/demo.git
+        revision: main
         files:
-          # - path: clusters/*/trino-values.yaml   # points to the YAML files, not directories
-          - path: {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
-
+          - path: clusters/*/bootstrap.yaml   # scans all cluster bootstrap files
   template:
     metadata:
-      name: '{{`{{path.basename}}`}}'
-      labels:
-        app: '{{`{{path.basename}}`}}'
-      finalizers:
-        - resources-finalizer.argocd.argoproj.io
+      name: '{{name}}'                       # generated Application name
     spec:
-      project: {{ .Values.project.name }}
-      sources:
-        # 1. Main Trino Helm chart
-        - repoURL: {{ .Values.source.repoURL }}
-          targetRevision: {{ .Values.source.targetRevision }}
-          path: helm/trino
-          helm:
-            valueFiles:
-              # - $values/helm/trino/values.yaml
-              # - {{ printf "$values/clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
-              - $values/{{`{{path}}`}}/trino-values.yaml
-        # 2. Reference repo to enable $values resolution
-        - repoURL: {{ .Values.source.repoURL }}
-          targetRevision: {{ .Values.source.targetRevision }}
-          ref: values
-
+      project: default
+      source:
+        repoURL: '{{repoURL}}'               # from bootstrap.yaml
+        chart: '{{chart}}'                    # wrapper chart: helm/trino
+        targetRevision: '{{version}}'        # wrapper chart version
+        helm:
+          dependencyUpdate: true             # update dependencies (Trino chart)
+          values: |
+            trino:
+              dependencyVersion: '{{dependencyVersionOverride}}'   # cluster Helm version
+          valueFiles:
+            {{- range $file := .valueFiles }}
+            - $values/{{ $file }}
+            {{- end }}
       destination:
-        server: {{ .Values.destination.server }}
-        namespace: {{ .Values.trino.namespace }}
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
       syncPolicy:
         automated:
           prune: true
@@ -45,4 +38,3 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - PrunePropagationPolicy=foreground
-          - Validate=false
