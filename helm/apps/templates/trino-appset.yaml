@@ -11,9 +11,9 @@ spec:
           - path: clusters/*/trino-values.yaml   # points to the YAML files, not directories
   template:
     metadata:
-      name: {{`{{path.basename}}`}}
+      name: '{{`{{path.basename}}`}}'
       labels:
-        app: {{`{{path.basename}}`}}
+        app: '{{`{{path.basename}}`}}'
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
