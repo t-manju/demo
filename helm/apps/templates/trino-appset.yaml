@@ -29,8 +29,8 @@ spec:
           targetRevision: main
           helm:
             valueFiles:
-              - $values/clusters/{{.clusterFolder}}/common.yaml
-              - $values/clusters/{{.clusterFolder}}/{{.clusterName}}/trino-values.yaml
+              - $values/clusters/stagedatalake/common.yaml
+              - $values/clusters/stagedatalake/{{.clusterName}}-values.yaml
         - repoURL: https://github.com/t-manju/demo.git
           targetRevision: main
           ref: values
