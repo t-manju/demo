@@ -7,34 +7,31 @@ spec:
   generators:
     - list:
         elements:
-          - clusterName: trino
-            clusterFolder: stagedatalake
-          - clusterName: trino1
-            clusterFolder: stagedatalake
-
+          - clusterFolder: stagedatalake
+            clusterName: trino
+          - clusterFolder: stagedatalake
+            clusterName: trino1
   template:
     metadata:
-      name: '{.clusterName}}'
       labels:
         app: trino
+      name: trino-{{.clusterName | lower}}
     spec:
       project: default
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{.clusterName}}'
+        namespace: trino-{{.clusterName | lower}}
       sources:
-        # Helm chart source
         - repoURL: https://trinodb.github.io/charts
           chart: trino
           targetRevision: 1.39.0
           helm:
             valueFiles:
-              - $values/clusters/{{.clusterFolder}}/common.yaml
-              - $values/clusters/{{.clusterFolder}}/{{.clusterName}}/trino-values.yaml
-        # Optional override values from your repo
+              - values/common.yaml
+              - values/{{.clusterFolder}}/{{.clusterName}}/trino-values.yaml
         - repoURL: https://github.com/t-manju/demo.git
           targetRevision: main
-          ref: values
+          path: clusters/{{.clusterFolder}}/{{.clusterName}}
       syncPolicy:
         automated:
           prune: true
