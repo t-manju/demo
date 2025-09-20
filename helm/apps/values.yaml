@@ -15,3 +15,4 @@ source:
 trino:
   enabled: true
   namespace: trino
+  appName: trino

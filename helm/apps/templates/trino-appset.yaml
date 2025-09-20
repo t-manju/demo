@@ -27,12 +27,12 @@ spec:
       sources:
         - repoURL: https://trinodb.github.io/charts
           chart: trino
-          targetRevision: '{{'{{helmVersion}}'}}'
+          targetRevision: '{{{{helmVersion}}}}'
           helm:
             valueFiles:
               # Reference the values file using the '$values' syntax
-              - {{ printf "$values/clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
-              - {{ printf "$values/clusters/common.yaml" .Values.source.clusterFolder | quote }}
+              - {{ printf "$values/clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
+              # - {{ printf "$values/clusters/common.yaml" .Values.source.clusterFolder | quote }}
               # - $values/{{`{{path}}`}}/trino-values.yaml
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{  .Values.source.targetRevision }}
