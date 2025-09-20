@@ -11,27 +11,33 @@ spec:
           - path: clusters/**/trino-values.yaml
   template:
     metadata:
-      name: '{{`{{path.basename}}`}}'
+      name: '{{path.basename}}-trino'
       labels:
         app: trino
     spec:
       project: default
       sources:
+        # 1. Define "values" ref FIRST
+        - repoURL: https://github.com/t-manju/demo.git
+          targetRevision: main
+          ref: values
+
+        # 2. Helm chart that consumes them
         - repoURL: https://github.com/t-manju/demo.git
           path: helm/trino
           targetRevision: main
           helm:
             valueFiles:
-              - $values/{{`{{path}}`}}/trino-values.yaml
-        - repoURL: https://github.com/t-manju/demo.git
-          targetRevision: main
-          ref: values
+              - $values/{{path}}   # resolves to clusters/.../trino-values.yaml
+
       destination:
         server: https://kubernetes.default.svc
-        namespace: 'trino-{{`{{path.basename}}`}}'
+        namespace: 'trino-{{path.basename}}'
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
         syncOptions:
           - CreateNamespace=true
+          - PrunePropagationPolicy=foreground
+          - Validate=false
