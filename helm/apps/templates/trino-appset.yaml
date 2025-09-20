@@ -28,8 +28,7 @@ spec:
           targetRevision: main
           helm:
             valueFiles:
-              - $values/{{path}}   # resolves to clusters/.../trino-values.yaml
-
+              - $values/{{path}}/trino-values.yaml  # resolves to clusters/.../trino-values.yaml
       destination:
         server: https://kubernetes.default.svc
         namespace: 'trino-{{path.basename}}'
