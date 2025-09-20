@@ -22,7 +22,7 @@ spec:
       project: default
       destination:
         server: https://kubernetes.default.svc
-        namespace: {{.clusterName}}
+        namespace: '{{.clusterName}}'
       sources:
         - repoURL: https://github.com/t-manju/demo.git
           path: helm/trino
@@ -30,7 +30,7 @@ spec:
           helm:
             valueFiles:
               - $values/clusters/stagedatalake/common.yaml
-              - $values/clusters/stagedatalake/{{'{{.clusterName}}'}}-values.yaml
+              - $values/clusters/stagedatalake/trino-values.yaml
         - repoURL: https://github.com/t-manju/demo.git
           targetRevision: main
           ref: values
