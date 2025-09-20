@@ -1,3 +1,4 @@
+helmVersion: "1.39.0"  # Default version; can be overridden per cluster
 global:
   env: "stage"
   region: "region_test"
