@@ -2,34 +2,40 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: trino
-  namespace: argocd
 spec:
   generators:
     - git:
-        repoURL: https://github.com/t-manju/demo.git
-        revision: main
+        repoURL: {{ .Values.source.repoURL }}
+        revision: {{ .Values.source.targetRevision }}
         files:
-          - path: clusters/*/bootstrap.yaml
+          # - path: clusters/*/trino-values.yaml   # points to the YAML files, not directories
+          - path: {{ printf "clusters/%s/*/trino-values.yaml" .Values.source.clusterFolder | quote }}
+
   template:
     metadata:
-      name: '{{name}}'
+      name: '{{`{{path.basename}}`}}'
+      labels:
+        app: '{{`{{path.basename}}`}}'
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
     spec:
-      project: default
-      source:
-        repoURL: '{{repoURL}}'
-        chart: '{{chart}}'
-        targetRevision: '{{version}}'
-        helm:
-          dependencyUpdate: true
-          values: |
-            trino:
-              dependencyVersion: '{{dependencyVersionOverride}}'
-          valueFiles:
-            - $values/helm/trino/values.yaml
-            - $values/clusters/stagedatalake/trino-values.yaml
+      project: {{ .Values.project.name }}
+      sources:
+        - repoURL: https://trinodb.github.io/charts
+          chart: trino
+          targetRevision: 1.39.0
+          helm:
+            valueFiles:
+            - $values/{{`{{path}}`}}/common.yaml
+            - $values/clusters/{{`{{path.basename}}`}}/trino-values.yaml
+        # 2. Reference repo to enable $values resolution
+        - repoURL: {{ .Values.source.repoURL }}
+          targetRevision: {{ .Values.source.targetRevision }}
+          ref: values
+
       destination:
-        server: https://kubernetes.default.svc
-        namespace: '{{namespace}}'
+        server: {{ .Values.destination.server }}
+        namespace: '{{`{{path.basename}}`}}'
       syncPolicy:
         automated:
           prune: true
@@ -37,3 +43,4 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - PrunePropagationPolicy=foreground
+          - Validate=false

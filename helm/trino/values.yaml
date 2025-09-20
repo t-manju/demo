@@ -15,36 +15,3 @@ vaultSecret:
     secret-key: dev-secret-value
     another-key: another-value
 
-trino:
-  server:
-    node:
-      environment: "dev_region_test"   # computed manually
-    workers: 1
-  additionalVolumes:
-    - name: access-control
-      configMap:
-        name: stagedatalake-trino-access-control
-
-  additionalVolumeMounts:
-    - name: access-control
-      mountPath: /etc/trino/access-control
-      readOnly: true
-
-  jmx:
-    enabled: true
-    registryPort: 9080
-    serverPort: 9081
-    exporter:
-      enabled: true
-      image: bitnamisecure/jmx-exporter:latest
-      pullPolicy: Always
-      port: 5556
-      configProperties: |
-        startDelaySeconds: 0
-        hostPort: 127.0.0.1:9080
-        rules:
-          - pattern: 'trino.memory*'
-          - pattern: 'trino.execution<name=QueryManager>*'
-          - pattern: 'trino.execution<name=ClusterSizeMonitor>*'
-
-
