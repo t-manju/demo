@@ -24,15 +24,17 @@ spec:
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{ .Values.source.targetRevision }}
           path: helm/trino
-          helm:
-            valueFiles:
-            - {{ printf "$values/clusters/%s/common.yaml" .Values.source.clusterFolder | quote }}
-            - $values/{{`{{path}}`}}/trino-values.yaml
+          # helm:
+          #   valueFiles:
+          #   - {{ printf "$values/clusters/%s/common.yaml" .Values.source.clusterFolder | quote }}
+          #   - $values/{{`{{path}}`}}/trino-values.yaml
         # 2. Reference repo to enable $values resolution
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{ .Values.source.targetRevision }}
-          ref: values
-
+          path: '{{`{{path}}`}}'
+          directory:
+            recurse: true
+            include: '**/trino-values.yaml'
       destination:
         server: {{ .Values.destination.server }}
         namespace: '{{`{{path.basename}}`}}'
