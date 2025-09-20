@@ -5,33 +5,35 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - list:
-        elements:
-          - clusterFolder: stagedatalake
-            clusterName: trino
-          - clusterFolder: stagedatalake
-            clusterName: trino1
+    # Use a Git generator to find the values files
+    - git:
+        repoURL: https://github.com/t-manju/demo.git
+        revision: main
+        files:
+          - path: clusters/**/trino-values.yaml
   template:
     metadata:
+      # Use the {{path}} variable from the generator
+      name: '{{`{{path.basename}}`}}'
       labels:
         app: trino
-      name: trino-{{.clusterName | lower}}
     spec:
       project: default
       destination:
         server: https://kubernetes.default.svc
-        namespace: trino-{{.clusterName | lower}}
+        namespace: 'trino-{{`{{path.basename}}`}}'
       sources:
         - repoURL: https://trinodb.github.io/charts
           chart: trino
           targetRevision: 1.39.0
           helm:
             valueFiles:
-              - values/common.yaml
-              - values/{{.clusterFolder}}/{{.clusterName}}/trino-values.yaml
+              # Reference the values file using the '$values' syntax
+              - $values/clusters/{{ .values.source.clusterFolder }}/common.yaml
+              - $values/{{`{{path}}`}}/trino-values.yaml
         - repoURL: https://github.com/t-manju/demo.git
           targetRevision: main
-          path: clusters/{{.clusterFolder}}/{{.clusterName}}
+          ref: values # This is a special reference to the git generator's repo
       syncPolicy:
         automated:
           prune: true
