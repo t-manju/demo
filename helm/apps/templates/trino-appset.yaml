@@ -5,46 +5,33 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: {{ .Values.source.repoURL }}
-        revision: {{ .Values.source.targetRevision }}
+        repoURL:  {{ .Values.source.repoURL }}
+        revision:  {{ .Values.source.targetRevision }}
+        # This path will find all trino-values.yaml files
+        # It's flexible and will work for both trino/ and trino01/ folders
         files:
-          # - path: clusters/*/trino-values.yaml   # points to the YAML files, not directories
-          - path: {{ printf "clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
-
+          - path: clusters/**/trino-values.yaml
   template:
     metadata:
-      name: '{{`{{path.basename}}`}}'
+      # Use path.basename to create a unique name for each application (e.g., stagedatalake-trino)
+      name: '{{`{{path.basename}}-trino`}}' 
       labels:
-        app: '{{`{{path.basename}}`}}'
+        app: trino
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
-      project: {{ .Values.project.name }}
-      # sources:
-      #   - repoURL: {{ .Values.source.repoURL }}
-      #     targetRevision: {{ .Values.source.targetRevision }}
-      #     path: helm/trino
+      project: default
       sources:
-        - repoURL: https://github.com/t-manju/demo.git
+        - repoURL: {{ .Values.source.repoURL }}
           path: helm/trino
-          targetRevision: main
+          targetRevision: {{ .Values.source.targetRevision }}
           helm:
             valueFiles:
-              - ../../clusters/stagedatalake/common.yaml  # Relative path
-              - ../../clusters/stagedatalake/trino/trino-values.yaml # Relative path
-          # helm:
-          #   valueFiles:
-          #   - {{ printf "$values/clusters/%s/common.yaml" .Values.source.clusterFolder | quote }}
-          #   - $values/{{`{{path}}`}}/trino-values.yaml
-        # 2. Reference repo to enable $values resolution
-        # - repoURL: {{ .Values.source.repoURL }}
-        #   targetRevision: {{ .Values.source.targetRevision }}
-        #   path: '{{`{{path}}`}}'
-        #   directory:
-        #     recurse: true
-        #     include: '**/trino-values.yaml'
+              # Use the path variable from the generator.
+              # This will resolve to the correct path for each cluster.
+              - ../../{{`{{path}}`}} 
       destination:
-        server: {{ .Values.destination.server }}
+        server: https://kubernetes.default.svc
         namespace: '{{`{{path.basename}}`}}'
       syncPolicy:
         automated:
