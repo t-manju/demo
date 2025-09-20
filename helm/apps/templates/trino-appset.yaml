@@ -21,8 +21,8 @@ spec:
     spec:
       project: {{ .Values.project.name }}
       sources:
-        - repoURL: https://github.com/t-manju/demo
-          targetRevision: main
+        - repoURL: {{ .Values.source.repoURL }}
+          targetRevision: {{ .Values.source.targetRevision }}
           path: helm/trino
           helm:
             valueFiles:
