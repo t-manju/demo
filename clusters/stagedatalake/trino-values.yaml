@@ -5,4 +5,4 @@ global:
 server:
   node:
     environment: "dev_region_test"   # computed manually
-  workers: 3
+  workers: 1
