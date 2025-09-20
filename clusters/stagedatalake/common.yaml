@@ -1,6 +1,58 @@
 server:
   workers: 3
 
+accessControl:
+  type: configmap
+  refreshPeriod: 60s
+  configFile: "rules.json"
+  rules:
+    rules.json: |-
+      {
+        "catalogs": [
+          {
+            "user": "admin",
+            "catalog": "(tpch|system)",
+            "allow": "all"
+          },
+          {
+            "group": "group1",
+            "catalog": "tpch",
+            "allow": true
+          },
+          {
+            "user": "alice",
+            "catalog": "jmx",
+            "allow": "read-only"
+          },
+          {
+            "catalog": "system",
+            "allow": "none"
+          }
+        ],
+        "schemas": [
+          {
+            "user": "admin",
+            "schema": ".*",
+            "owner": true
+          },
+          {
+            "user": "alice",
+            "owner": false
+          }
+        ],
+        "system_session_properties": [
+          {
+            "role": "admin",
+            "allow": true
+          },
+          {
+            "user": ".*",
+            "property": "query_max_execution_time",
+            "allow": true
+          }
+        ]
+      }
+
 jmx:
   enabled: true
   registryPort: 9080
