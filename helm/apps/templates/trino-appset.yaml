@@ -9,7 +9,7 @@ spec:
         revision: {{ .Values.source.targetRevision }}
         files:
           # - path: clusters/*/trino-values.yaml   # points to the YAML files, not directories
-          - path: {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
+          - path: {{ printf "clusters/%s/*/trino-values.yaml" .Values.source.clusterFolder | quote }}
 
   template:
     metadata:
@@ -26,8 +26,8 @@ spec:
           targetRevision: 1.39.0
           helm:
             valueFiles:
-            - $values/{{`{{path}}`}}/common.yaml
-            - $values/clusters/{{`{{path.basename}}`}}/trino-values.yaml
+            - {{ printf "clusters/%s/common.yaml" .Values.source.clusterFolder | quote }}
+            - $values/{{`{{path}}`}}/trino-values.yaml
         # 2. Reference repo to enable $values resolution
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{ .Values.source.targetRevision }}

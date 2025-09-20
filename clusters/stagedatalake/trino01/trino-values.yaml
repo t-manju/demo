@@ -1,0 +1,8 @@
+global:
+  env: "stage"
+  region: "region_test"
+
+server:
+  node:
+    environment: "stage_region_test"   # computed manually
+  workers: 1
