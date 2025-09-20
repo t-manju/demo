@@ -11,7 +11,7 @@ spec:
         revision: {{ .Values.source.targetRevision }}
         files:
           # - path: clusters/**/trino-values.yaml
-        - {{ printf "$values/clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
+        - path: {{ printf "$values/clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
   template:
     metadata:
       name: {{ .Values.trino.appName }}
@@ -27,7 +27,7 @@ spec:
       sources:
         - repoURL: https://trinodb.github.io/charts
           chart: trino
-          targetRevision: '{{'{{helmVersion}}'}}'  # This wil be replaced by the values file
+          targetRevision: '{{'{{helmVersion}}'}}'
           helm:
             valueFiles:
               # Reference the values file using the '$values' syntax
