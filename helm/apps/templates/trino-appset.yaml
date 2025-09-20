@@ -9,7 +9,7 @@ spec:
         revision: {{ .Values.source.targetRevision }}
         files:
           # - path: clusters/*/trino-values.yaml   # points to the YAML files, not directories
-          - path: {{ printf "clusters/%s/*/trino-values.yaml" .Values.source.clusterFolder | quote }}
+          - path: {{ printf "clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
 
   template:
     metadata:
@@ -20,21 +20,29 @@ spec:
         - resources-finalizer.argocd.argoproj.io
     spec:
       project: {{ .Values.project.name }}
+      # sources:
+      #   - repoURL: {{ .Values.source.repoURL }}
+      #     targetRevision: {{ .Values.source.targetRevision }}
+      #     path: helm/trino
       sources:
-        - repoURL: {{ .Values.source.repoURL }}
-          targetRevision: {{ .Values.source.targetRevision }}
+        - repoURL: https://github.com/t-manju/demo.git
           path: helm/trino
+          targetRevision: main
+          helm:
+            valueFiles:
+              - ../../clusters/stagedatalake/common.yaml  # Relative path
+              - ../../clusters/stagedatalake/trino/trino-values.yaml # Relative path
           # helm:
           #   valueFiles:
           #   - {{ printf "$values/clusters/%s/common.yaml" .Values.source.clusterFolder | quote }}
           #   - $values/{{`{{path}}`}}/trino-values.yaml
         # 2. Reference repo to enable $values resolution
-        - repoURL: {{ .Values.source.repoURL }}
-          targetRevision: {{ .Values.source.targetRevision }}
-          path: '{{`{{path}}`}}'
-          directory:
-            recurse: true
-            include: '**/trino-values.yaml'
+        # - repoURL: {{ .Values.source.repoURL }}
+        #   targetRevision: {{ .Values.source.targetRevision }}
+        #   path: '{{`{{path}}`}}'
+        #   directory:
+        #     recurse: true
+        #     include: '**/trino-values.yaml'
       destination:
         server: {{ .Values.destination.server }}
         namespace: '{{`{{path.basename}}`}}'
