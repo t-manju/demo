@@ -25,14 +25,14 @@ spec:
           helm:
             valueFiles:
               # CORRECTED PATH: Use only {{path}} as it's the full path to the values file
-              - $values/{{`{{path}}`}}
+              - $values/{{`{{path}}`}}/trino-values.yaml
         - repoURL: https://github.com/t-manju/demo.git
           targetRevision: main
           ref: values
       destination:
         server: https://kubernetes.default.svc
         # The namespace should match the application name for consistency
-        namespace: 'trino-{{`{{path.basename}}`}}'
+        namespace: '{{`{{path.basename}}`}}'
       syncPolicy:
         automated:
           prune: true
