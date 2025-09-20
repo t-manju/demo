@@ -9,7 +9,7 @@ spec:
         revision: {{ .Values.source.targetRevision }}
         files:
           # - path: clusters/*/trino-values.yaml   # points to the YAML files, not directories
-          - path: {{ printf "clusters/%s/*/trino-values.yaml" .Values.source.clusterFolder | quote }}
+          - path: {{ printf "clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
 
   template:
     metadata:
