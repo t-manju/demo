@@ -1,38 +1,38 @@
 apiVersion: argoproj.io/v1alpha1
-kind: ApplicationSet
+kind: Application
 metadata:
   name: trino
+  namespace: argocd
 spec:
   generators:
     - git:
-        # Use a hardcoded Git URL and revision as generators do not support Helm templating
         repoURL: https://github.com/t-manju/demo.git
         revision: main
         files:
           - path: clusters/**/trino-values.yaml
   template:
     metadata:
-      # Use a structured name for clarity
       name: '{{`{{path.basename}}`}}'
       labels:
         app: trino
     spec:
-      project: default
+      project: {{ .Values.project.name }}
+      destination:
+        server: {{ .Values.destination.server }}
+        namespace: {{ .Values.trino.namespace }}
       sources:
-        - repoURL: https://github.com/t-manju/demo.git
-          path: helm/trino
-          targetRevision: main
+        # First source: public Trino Helm chart with cluster overrides
+        - repoURL: https://trinodb.github.io/charts
+          chart: trino
+          targetRevision: 1.39.0
           helm:
             valueFiles:
-              # CORRECTED PATH: Use only {{path}} as it's the full path to the values file
-              - $values/{{`{{path}}`}}/trino-values.yaml
-        - repoURL: https://github.com/t-manju/demo.git
+              - {{ printf "$values/clusters/%s/common.yaml" .Values.source.clusterFolder | quote }}
+              - {{`{{path}}`}}/trino-values.yaml
+        - repoURL: {{ .Values.source.repoURL }}
           targetRevision: main
           ref: values
-      destination:
-        server: https://kubernetes.default.svc
-        # The namespace should match the application name for consistency
-        namespace: '{{`{{path.basename}}`}}'
+
       syncPolicy:
         automated:
           prune: true
