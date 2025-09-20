@@ -1,4 +1,4 @@
-helmVersion: "1.39.0"  # Default version; can be overridden per cluster
+helmVersion: 1.39.0
 global:
   env: "dev"
   region: "region_test"
