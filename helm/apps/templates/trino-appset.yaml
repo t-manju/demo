@@ -4,14 +4,15 @@ metadata:
   name: trino
   namespace: argocd
 spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
-    - git:
-        repoURL: https://github.com/t-manju/demo.git
-        revision: main
-        files:
-          - path: clusters/**/trino-values.yaml
-
-  template:
+  - list:
+      elements:
+      - clusterFolder: stagedatalake
+      - clusterName: trino
+      - clusterName: trino1
+    template:
     metadata:
       name: '{{`{{path.basename}}`}}'
       labels:
@@ -28,8 +29,8 @@ spec:
           targetRevision: main
           helm:
             valueFiles:
-              - $values/clusters/{{ .Values.source.clusterFolder }}/common.yaml
-              - $values/{{`{{path}}`}}/trino-values.yaml
+              - $values/clusters/{{.clusterFolder}}/common.yaml
+              - $values/clusters/{{.clusterFolder}}/{{.clusterName}}/trino-values.yaml
         # Optional override values from your repo
         - repoURL: 'https://github.com/t-manju/demo.git'
           targetRevision: main
