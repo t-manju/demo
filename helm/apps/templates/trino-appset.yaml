@@ -11,18 +11,21 @@ spec:
           - path: clusters/**/trino-values.yaml
   template:
     metadata:
-      name: '{{path.basename}}'
+      name: '{{`{{path.basename}}`}}'
       labels:
         app: trino
     spec:
       project: default
       sources:
-        - repoURL: {{ .Values.source.repoURL }}
-          path: {{ .Values.source.targetRevision}}
+        - repoURL: https://github.com/t-manju/demo.git
+          path: helm/trino
           targetRevision: main
           helm:
             valueFiles:
-              - $values/{{path}}/trino-values.yaml  # resolves to clusters/.../trino-values.yaml
+              - $values/{{`{{path}}`}}/trino-values.yaml
+        - repoURL: https://github.com/t-manju/demo.git
+          targetRevision: main
+          ref: values
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{path.basename}}'
