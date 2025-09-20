@@ -21,7 +21,7 @@ spec:
       project: default
       destination:
         server: https://kubernetes.default.svc
-        namespace: 'trino-{{`{{path.basename}}`}}'
+        namespace: '{{`{{path.basename}}`}}'
       sources:
         - repoURL: https://trinodb.github.io/charts
           chart: trino
