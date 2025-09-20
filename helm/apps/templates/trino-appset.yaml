@@ -21,9 +21,9 @@ spec:
     spec:
       project: {{ .Values.project.name }}
       sources:
-        - repoURL: https://trinodb.github.io/charts
-          chart: trino
-          targetRevision: 1.39.0
+        - repoURL: https://github.com/t-manju/demo
+          targetRevision: main
+          path: helm/trino
           helm:
             valueFiles:
             - {{ printf "$values/clusters/%s/common.yaml" .Values.source.clusterFolder | quote }}
