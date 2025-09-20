@@ -5,37 +5,37 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL:  {{ .Values.source.repoURL }}
-        revision:  {{ .Values.source.targetRevision }}
-        # This path will find all trino-values.yaml files
-        # It's flexible and will work for both trino/ and trino01/ folders
+        repoURL: https://github.com/t-manju/demo.git
+        revision: main
         files:
           - path: clusters/**/trino-values.yaml
   template:
     metadata:
-      # Use path.basename to create a unique name for each application (e.g., stagedatalake-trino)
-      name: '{{`{{path.basename}}-trino`}}' 
-      finalizers:
-        - resources-finalizer.argocd.argoproj.io
+      name: 'trino-{{`{{path.basename}}`}}'
+      labels:
+        app: trino
     spec:
       project: default
       sources:
-        - repoURL: {{ .Values.source.repoURL }}
+        # This is the source for the Helm Chart
+        - repoURL: https://github.com/t-manju/demo.git
+          # Use 'path' to specify the Helm chart's location
           path: helm/trino
-          targetRevision: {{ .Values.source.targetRevision }}
+          targetRevision: main
           helm:
             valueFiles:
-              # Use the path variable from the generator.
-              # This will resolve to the correct path for each cluster.
-              - ../../{{`{{path}}`}}/trino-values.yaml
+              # This tells ArgoCD to get the values from the source with 'ref: values'
+              - $values/{{`{{path}}`}}/trino-values.yaml
+        # This is the source for the values files
+        - repoURL: https://github.com/t-manju/demo.git
+          targetRevision: main
+          ref: values
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{`{{path.basename}}`}}'
+        namespace: 'trino-{{`{{path.basename}}`}}'
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
         syncOptions:
           - CreateNamespace=true
-          - PrunePropagationPolicy=foreground
-          - Validate=false
