@@ -23,15 +23,15 @@ spec:
         namespace: trino-{{`{{path.basename}}`}}
       sources:
         # Helm chart source
-        - repoURL: https://trinodb.github.io/charts
-          chart: trino
-          targetRevision: 1.39.0
+        - repoURL: https://github.com/t-manju/demo.git
+          path: helm/trino
+          targetRevision: main
           helm:
             valueFiles:
               - $values/clusters/{{ .Values.source.clusterFolder }}/common.yaml
               - $values/{{`{{path}}`}}/trino-values.yaml
         # Optional override values from your repo
-        - repoURL: https://github.com/t-manju/demo.git
+        - repoURL: 'https://github.com/t-manju/demo.git'
           targetRevision: main
           ref: values
       syncPolicy:
