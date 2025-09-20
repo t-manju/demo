@@ -14,14 +14,14 @@ spec:
       - clusterName: trino1
     template:
     metadata:
-      name: '{{`{{path.basename}}`}}'
+      name: 'trino-{{.clusterName}}`
       labels:
         app: trino
     spec:
       project: default
       destination:
         server: https://kubernetes.default.svc
-        namespace: trino-{{`{{path.basename}}`}}
+        namespace: `{{.clusterName}}'
       sources:
         # Helm chart source
         - repoURL: https://github.com/t-manju/demo.git
