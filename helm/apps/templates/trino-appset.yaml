@@ -5,13 +5,15 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL:  {{ .Values.source.repoURL }}
-        revision: {{ .Values.source.targetRevision}}
+        # Use a hardcoded Git URL and revision as generators do not support Helm templating
+        repoURL: https://github.com/t-manju/demo.git
+        revision: main
         files:
           - path: clusters/**/trino-values.yaml
   template:
     metadata:
-      name: '{{`{{path.basename}}`}}'
+      # Use a structured name for clarity
+      name: 'trino-{{`{{path.basename}}`}}'
       labels:
         app: trino
     spec:
@@ -22,13 +24,15 @@ spec:
           targetRevision: main
           helm:
             valueFiles:
-              - $values/{{`{{path}}`}}/trino-values.yaml
+              # CORRECTED PATH: Use only {{path}} as it's the full path to the values file
+              - $values/{{`{{path}}`}}
         - repoURL: https://github.com/t-manju/demo.git
           targetRevision: main
           ref: values
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path.basename}}'
+        # The namespace should match the application name for consistency
+        namespace: 'trino-{{`{{path.basename}}`}}'
       syncPolicy:
         automated:
           prune: true
