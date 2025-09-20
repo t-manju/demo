@@ -27,7 +27,7 @@ spec:
       sources:
         - repoURL: https://trinodb.github.io/charts
           chart: trino
-          targetRevision: {{'{{helmVersion}}'}}
+          targetRevision: '{{helmVersion}}'
           helm:
             valueFiles:
               # Reference the values file using the '$values' syntax
