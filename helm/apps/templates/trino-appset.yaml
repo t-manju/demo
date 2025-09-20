@@ -7,23 +7,23 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
-  - list:
-      elements:
-      - clusterFolder: stagedatalake
-      - clusterName: trino
-      - clusterName: trino1
-    template:
+    - list:
+        elements:
+          - clusterFolder: stagedatalake
+            clusterName: trino
+          - clusterFolder: stagedatalake
+            clusterName: trino1
+  template:
     metadata:
-      name: 'trino-{{.clusterName}}`
+      name: {{.clusterName}}
       labels:
         app: trino
     spec:
       project: default
       destination:
         server: https://kubernetes.default.svc
-        namespace: `{{.clusterName}}'
+        namespace: {{.clusterName}}
       sources:
-        # Helm chart source
         - repoURL: https://github.com/t-manju/demo.git
           path: helm/trino
           targetRevision: main
@@ -31,8 +31,7 @@ spec:
             valueFiles:
               - $values/clusters/{{.clusterFolder}}/common.yaml
               - $values/clusters/{{.clusterFolder}}/{{.clusterName}}/trino-values.yaml
-        # Optional override values from your repo
-        - repoURL: 'https://github.com/t-manju/demo.git'
+        - repoURL: https://github.com/t-manju/demo.git
           targetRevision: main
           ref: values
       syncPolicy:
