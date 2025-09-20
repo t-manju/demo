@@ -1,5 +1,5 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
 metadata:
   name: trino
   namespace: argocd
@@ -10,29 +10,30 @@ spec:
         revision: main
         files:
           - path: clusters/**/trino-values.yaml
+
   template:
     metadata:
-      name: '{{`{{path.basename}}`}}'
+      name: trino-{{`{{path.basename}}`}}
       labels:
         app: trino
     spec:
-      project: {{ .Values.project.name }}
+      project: default
       destination:
-        server: {{ .Values.destination.server }}
-        namespace: {{ .Values.trino.namespace }}
+        server: https://kubernetes.default.svc
+        namespace: trino-{{`{{path.basename}}`}}
       sources:
-        # First source: public Trino Helm chart with cluster overrides
+        # Helm chart source
         - repoURL: https://trinodb.github.io/charts
           chart: trino
           targetRevision: 1.39.0
           helm:
             valueFiles:
-              - {{ printf "$values/clusters/%s/common.yaml" .Values.source.clusterFolder | quote }}
-              - {{`{{path}}`}}/trino-values.yaml
-        - repoURL: {{ .Values.source.repoURL }}
+              - $values/clusters/{{`{{path.basename}}`}}/common.yaml
+              - $values/{{`{{path}}`}}/trino-values.yaml
+        # Optional override values from your repo
+        - repoURL: https://github.com/t-manju/demo.git
           targetRevision: main
           ref: values
-
       syncPolicy:
         automated:
           prune: true
