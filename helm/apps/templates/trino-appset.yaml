@@ -28,7 +28,7 @@ spec:
           helm:
             valueFiles:
               # Reference the values file using the '$values' syntax
-              - $values/clusters/{{ .values.source.clusterFolder }}/common.yaml
+              - $values/clusters/{{ .value.source.clusterFolder }}/common.yaml
               - $values/{{`{{path}}`}}/trino-values.yaml
         - repoURL: https://github.com/t-manju/demo.git
           targetRevision: main
