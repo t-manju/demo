@@ -13,7 +13,7 @@ spec:
 
   template:
     metadata:
-      name: trino-{{`{{path.basename}}`}}
+      name: '{{`{{path.basename}}`}}'
       labels:
         app: trino
     spec:
@@ -28,7 +28,7 @@ spec:
           targetRevision: 1.39.0
           helm:
             valueFiles:
-              - $values/clusters/{{`{{path.basename}}`}}/common.yaml
+              - $values/clusters/{{ .Values.source.clusterFolder }}/trino-values.yaml
               - $values/{{`{{path}}`}}/trino-values.yaml
         # Optional override values from your repo
         - repoURL: https://github.com/t-manju/demo.git
