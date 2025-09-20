@@ -1,9 +1,22 @@
-name: stagedatalake-trino
-namespace: trino
-chart: trino
-repoURL: https://github.com/t-manju/demo.git
-version: 0.1.0
-dependencyVersionOverride: 1.39.0
-valueFiles:
-  - helm/trino/values.yaml
-  - clusters/stagedatalake/trino-values.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: trino-apps
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/t-manju/demo.git   # <-- Replace with your repo
+    targetRevision: main                                     # Git branch
+    path: helm/apps                        # Points to your apps/ Helm chart
+  destination:
+    server: https://kubernetes.default.svc                   # In-cluster API for Minikube
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - PrunePropagationPolicy=foreground
