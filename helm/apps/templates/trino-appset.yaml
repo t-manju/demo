@@ -13,7 +13,6 @@ spec:
           - path: clusters/**/trino-values.yaml
   template:
     metadata:
-      # Use the {{path}} variable from the generator
       name: '{{`{{path.basename}}`}}'
       labels:
         app: trino
