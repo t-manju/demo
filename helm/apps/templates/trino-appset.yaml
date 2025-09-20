@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       # Use a structured name for clarity
-      name: 'trino-{{`{{path.basename}}`}}'
+      name: '{{`{{path.basename}}`}}'
       labels:
         app: trino
     spec:
