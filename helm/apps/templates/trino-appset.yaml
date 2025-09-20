@@ -15,7 +15,7 @@ spec:
             clusterName: trino1
   template:
     metadata:
-      name: {{.clusterName}}
+      name: '{{.clusterName}}'
       labels:
         app: trino
     spec:
@@ -30,7 +30,7 @@ spec:
           helm:
             valueFiles:
               - $values/clusters/stagedatalake/common.yaml
-              - $values/clusters/stagedatalake/{{.clusterName}}-values.yaml
+              - $values/clusters/stagedatalake/{{'{{.clusterName}}'}}-values.yaml
         - repoURL: https://github.com/t-manju/demo.git
           targetRevision: main
           ref: values
