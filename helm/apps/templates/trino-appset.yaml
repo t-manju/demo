@@ -15,8 +15,6 @@ spec:
     metadata:
       # Use path.basename to create a unique name for each application (e.g., stagedatalake-trino)
       name: '{{`{{path.basename}}-trino`}}' 
-      labels:
-        app: trino
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
@@ -29,7 +27,7 @@ spec:
             valueFiles:
               # Use the path variable from the generator.
               # This will resolve to the correct path for each cluster.
-              - ../../{{`{{path}}`}} 
+              - ../../{{`{{path}}`}}/trino-values.yaml
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{`{{path.basename}}`}}'
