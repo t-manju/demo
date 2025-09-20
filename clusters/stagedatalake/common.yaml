@@ -25,6 +25,11 @@ accessControl:
             "allow": "read-only"
           },
           {
+            "user": "tom",
+            "catalog": "jmx",
+            "allow": "read-only"
+          },
+          {
             "catalog": "system",
             "allow": "none"
           }
@@ -37,6 +42,10 @@ accessControl:
           },
           {
             "user": "alice",
+            "owner": false
+          }
+          {
+            "user": "tom",
             "owner": false
           }
         ],
