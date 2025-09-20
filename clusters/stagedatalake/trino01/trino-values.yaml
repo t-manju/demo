@@ -5,4 +5,4 @@ global:
 server:
   node:
     environment: "stage_region_test"   # computed manually
-  workers: 1
+  workers: 2
