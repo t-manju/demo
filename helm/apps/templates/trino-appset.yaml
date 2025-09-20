@@ -1,37 +1,41 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: trino
+  name: {{ .Values.trino.appName }}
   namespace: argocd
 spec:
   generators:
     # Use a Git generator to find the values files
     - git:
-        repoURL: https://github.com/t-manju/demo.git
-        revision: main
+        repoURL: {{ .Values.source.repoURL}}
+        revision: {{ .Values.source.targetRevision }}
         files:
-          - path: clusters/**/trino-values.yaml
+          # - path: clusters/**/trino-values.yaml
+        - {{ printf "$values/clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
   template:
     metadata:
-      name: '{{`{{path.basename}}`}}'
+      name: {{ .Values.trino.appName }}
       labels:
-        app: trino
+        app: {{ .Values.trino.appName }}
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
     spec:
       project: default
       destination:
-        server: https://kubernetes.default.svc
-        namespace: '{{`{{path.basename}}`}}'
+        server: {{ .Values.destination.server }}
+        namespace: {{ .Values.trino.namespace }}
       sources:
         - repoURL: https://trinodb.github.io/charts
           chart: trino
-          targetRevision: 1.39.0
+          targetRevision: '{{'{{helmVersion}}'}}'  # This wil be replaced by the values file
           helm:
             valueFiles:
               # Reference the values file using the '$values' syntax
-              - $values/clusters/{{ .value.source.clusterFolder }}/common.yaml
-              - $values/{{`{{path}}`}}/trino-values.yaml
-        - repoURL: https://github.com/t-manju/demo.git
-          targetRevision: main
+              - {{ printf "$values/clusters/%s/trino-values.yaml" .Values.source.clusterFolder | quote }}
+              - {{ printf "$values/clusters/common.yaml" .Values.source.clusterFolder | quote }}
+              # - $values/{{`{{path}}`}}/trino-values.yaml
+        - repoURL: {{ .Values.source.repoURL }}
+          targetRevision: {{  .Values.source.targetRevision }}
           ref: values # This is a special reference to the git generator's repo
       syncPolicy:
         automated:
