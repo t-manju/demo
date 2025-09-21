@@ -1,0 +1,25 @@
+helmVersion: 1.39.0
+global:
+  env: "dev"
+  region: "region_test"
+
+server:
+  node:
+    environment: "dev_region_test"   # computed manually
+  workers: 1
+
+accessControl:
+  type: configmap
+  refreshPeriod: 60s
+  configFile: "rules.json"
+  rules:
+    rules.json: |-
+      {
+        "catalogs": [
+          {
+            "user": "admin",
+            "catalog": "(tpch|system)",
+            "allow": "all"
+          }
+        ]
+      }
