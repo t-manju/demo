@@ -56,12 +56,12 @@ spec:
         repoURL: {{ .Values.source.repoURL }}
         revision: {{ .Values.source.targetRevision }}
         files:
-          # Match all trino instance files in the env folder
-          - path: {{ printf "clusters/%s/*-values.yaml" .Values.source.clusterFolder | quote }}
+          # Match all trino instance value files for the selected environment
+          - path: clusters/{{ .Values.source.clusterFolder }}/*-values.yaml
   template:
     metadata:
-      # Strip the -values.yaml suffix for clean app name
-      name: '{{`{{toLower (replace (path.Base .Path) "-values.yaml" "")}}`}}'
+      # App name derived from filename (without "-values.yaml"), lowercase
+      name: "{{- lower (path.Base .Path | replace \"-values.yaml\" \"\") -}}"
       labels:
         app: trino
       finalizers:
@@ -70,15 +70,16 @@ spec:
       project: default
       destination:
         server: {{ .Values.destination.server }}
-        namespace: '{{`{{toLower (replace (path.Base .Path) "-values.yaml" "")}}`}}'
+        # Namespace same as app name
+        namespace: "{{- lower (path.Base .Path | replace \"-values.yaml\" \"\") -}}"
       sources:
         - repoURL: https://trinodb.github.io/charts
           chart: trino
           targetRevision: 1.39.0
           helm:
             valueFiles:
-              - $values/clusters/common.yaml      # common configs
-              - $values/{{`{{path}}`}}/*-values.yaml        # instance-specific values
+              - $values/clusters/common.yaml          # environment common configs
+              - $values/{{`{{path}}`}}               # instance-specific values
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{ .Values.source.targetRevision }}
           ref: values
