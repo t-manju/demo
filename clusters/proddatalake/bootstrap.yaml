@@ -15,6 +15,7 @@ spec:
       values: |
         source:
         clusterFolder: proddatalake                     # Which cluster folder to use (stage/prod/etc.)
+        repoURL: https://github.com/t-manju/demo.git
   destination:
     server: https://kubernetes.default.svc                   # In-cluster API for Minikube
     namespace: argocd
