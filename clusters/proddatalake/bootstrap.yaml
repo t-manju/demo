@@ -14,7 +14,9 @@ spec:
     helm:
       values: |
         source:
-        clusterFolder: "proddatalake"
+          clusterFolder: "proddatalake"
+        trino:
+          appName: trino1
   destination:
     server: https://kubernetes.default.svc                   # In-cluster API for Minikube
     namespace: argocd
