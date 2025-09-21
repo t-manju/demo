@@ -32,8 +32,8 @@ spec:
             valueFiles:
               # Reference the values file using the '$values' syntax
               - $values/clusters/common.yaml
-              - {{ printf "$values/clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
-              # - $values/{{`{{path}}`}}/trino-values.yaml
+              # - {{ printf "$values/clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
+              - $values/{{`{{path}}`}}/trino-values.yaml
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{  .Values.source.targetRevision }}
           ref: values # This is a special reference to the git generator's repo
