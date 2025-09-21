@@ -31,8 +31,8 @@ spec:
           helm:
             valueFiles:
               # Reference the values file using the '$values' syntax
-              - {{ printf "$values/clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
               - $values/clusters/common.yaml
+              - {{ printf "$values/clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
               # - $values/{{`{{path}}`}}/trino-values.yaml
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{  .Values.source.targetRevision }}
