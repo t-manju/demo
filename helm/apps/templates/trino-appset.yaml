@@ -1,3 +1,50 @@
+# apiVersion: argoproj.io/v1alpha1
+# kind: ApplicationSet
+# metadata:
+#   name: {{ .Values.trino.appName }}
+#   namespace: argocd
+# spec:
+#   generators:
+#     # Use a Git generator to find the values files
+#     - git:
+#         repoURL: {{ .Values.source.repoURL}}
+#         revision: {{ .Values.source.targetRevision }}
+#         files:
+#         # - path: clusters/**/trino-values.yaml
+#         - path: {{ printf "clusters/%s/*/trino-values.yaml" .Values.source.clusterFolder | quote }}
+#   template:
+#     metadata:
+#       name: '{{`{{path.basename}}`}}'
+#       labels:
+#         app: trino
+#       finalizers:
+#         - resources-finalizer.argocd.argoproj.io
+#     spec:
+#       project: default
+#       destination:
+#         server: {{ .Values.destination.server }}
+#         namespace: '{{`{{path.basename}}`}}'
+#       sources:
+#         - repoURL: https://trinodb.github.io/charts
+#           chart: trino
+#           targetRevision: 1.39.0
+#           helm:
+#             valueFiles:
+#               # Reference the values file using the '$values' syntax
+#               - $values/clusters/common.yaml
+#               # - {{ printf "$values/clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
+#               - $values/{{`{{path}}`}}/trino-values.yaml
+#         - repoURL: {{ .Values.source.repoURL }}
+#           targetRevision: {{  .Values.source.targetRevision }}
+#           ref: values # This is a special reference to the git generator's repo
+#       syncPolicy:
+#         automated:
+#           prune: true
+#           selfHeal: true
+#         syncOptions:
+#           - CreateNamespace=true
+#           - PrunePropagationPolicy=foreground
+#           - Validate=false
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -5,16 +52,16 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    # Use a Git generator to find the values files
     - git:
-        repoURL: {{ .Values.source.repoURL}}
+        repoURL: {{ .Values.source.repoURL }}
         revision: {{ .Values.source.targetRevision }}
         files:
-        # - path: clusters/**/trino-values.yaml
-        - path: {{ printf "clusters/%s/*/trino-values.yaml" .Values.source.clusterFolder | quote }}
+          # Match all trino instance files in the env folder
+          - path: {{ printf "clusters/%s/*-values.yaml" .Values.source.clusterFolder | quote }}
   template:
     metadata:
-      name: '{{`{{path.basename}}`}}'
+      # Strip the -values.yaml suffix for clean app name
+      name: '{{`{{replace (path.Base .Path) "-values.yaml" ""}}`}}'
       labels:
         app: trino
       finalizers:
@@ -23,20 +70,18 @@ spec:
       project: default
       destination:
         server: {{ .Values.destination.server }}
-        namespace: '{{`{{path.basename}}`}}'
+        namespace: '{{`{{replace (path.Base .Path) "-values.yaml" ""}}`}}'
       sources:
         - repoURL: https://trinodb.github.io/charts
           chart: trino
           targetRevision: 1.39.0
           helm:
             valueFiles:
-              # Reference the values file using the '$values' syntax
-              - $values/clusters/common.yaml
-              # - {{ printf "$values/clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
-              - $values/{{`{{path}}`}}/trino-values.yaml
+              - $values/clusters/common.yaml      # common configs
+              - $values/{{`{{path}}`}}           # instance-specific values
         - repoURL: {{ .Values.source.repoURL }}
-          targetRevision: {{  .Values.source.targetRevision }}
-          ref: values # This is a special reference to the git generator's repo
+          targetRevision: {{ .Values.source.targetRevision }}
+          ref: values
       syncPolicy:
         automated:
           prune: true
