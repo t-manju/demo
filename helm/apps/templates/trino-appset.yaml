@@ -10,20 +10,20 @@ spec:
         repoURL: {{ .Values.source.repoURL}}
         revision: {{ .Values.source.targetRevision }}
         files:
-          # - path: clusters/**/trino-values.yaml
-        - path: {{ printf "clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
+        # - path: clusters/**/trino-values.yaml
+        - path: {{ printf "clusters/%s/*/trino-values.yaml" .Values.source.clusterFolder | quote }}
   template:
     metadata:
-      name: {{ .Values.trino.appName }}
+      name: '{{{{path.basename}}}}'
       labels:
-        app: {{ .Values.trino.appName }}
+        app: trino
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
       project: default
       destination:
         server: {{ .Values.destination.server }}
-        namespace: {{ .Values.trino.namespace }}
+        namespace: '{{{{path.basename}}}}'
       sources:
         - repoURL: https://trinodb.github.io/charts
           chart: trino
