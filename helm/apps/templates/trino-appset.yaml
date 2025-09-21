@@ -61,7 +61,7 @@ spec:
   template:
     metadata:
       # Strip the -values.yaml suffix for clean app name
-      name: '{{`{{replace (path.Base .Path) "-values.yaml" ""}}`}}'
+      name: '{{`{{toLower (replace (path.Base .Path) "-values.yaml" "")}}`}}'
       labels:
         app: trino
       finalizers:
@@ -70,7 +70,7 @@ spec:
       project: default
       destination:
         server: {{ .Values.destination.server }}
-        namespace: '{{`{{replace (path.Base .Path) "-values.yaml" ""}}`}}'
+        namespace: '{{`{{toLower (replace (path.Base .Path) "-values.yaml" "")}}`}}'
       sources:
         - repoURL: https://trinodb.github.io/charts
           chart: trino
@@ -78,7 +78,7 @@ spec:
           helm:
             valueFiles:
               - $values/clusters/common.yaml      # common configs
-              - $values/{{`{{path}}`}}           # instance-specific values
+              - $values/{{`{{path}}`}}/*-values.yaml        # instance-specific values
         - repoURL: {{ .Values.source.repoURL }}
           targetRevision: {{ .Values.source.targetRevision }}
           ref: values
