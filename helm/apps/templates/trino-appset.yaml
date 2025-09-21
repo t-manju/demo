@@ -14,7 +14,7 @@ spec:
         - path: {{ printf "clusters/%s/*/trino-values.yaml" .Values.source.clusterFolder | quote }}
   template:
     metadata:
-      name: '{{{{path.basename}}}}'
+      name: {{'{{path.basename}}'}}
       labels:
         app: trino
       finalizers:
@@ -23,7 +23,7 @@ spec:
       project: default
       destination:
         server: {{ .Values.destination.server }}
-        namespace: '{{{{path.basename}}}}'
+        namespace: {{'{{path.basename}}'}}
       sources:
         - repoURL: https://trinodb.github.io/charts
           chart: trino
