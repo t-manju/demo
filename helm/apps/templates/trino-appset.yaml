@@ -1,93 +1,29 @@
-# apiVersion: argoproj.io/v1alpha1
-# kind: ApplicationSet
-# metadata:
-#   name: {{ .Values.trino.appName }}
-#   namespace: argocd
-# spec:
-#   generators:
-#     # Use a Git generator to find the values files
-#     - git:
-#         repoURL: {{ .Values.source.repoURL}}
-#         revision: {{ .Values.source.targetRevision }}
-#         files:
-#         # - path: clusters/**/trino-values.yaml
-#         - path: {{ printf "clusters/%s/*/trino-values.yaml" .Values.source.clusterFolder | quote }}
-#   template:
-#     metadata:
-#       name: '{{`{{path.basename}}`}}'
-#       labels:
-#         app: trino
-#       finalizers:
-#         - resources-finalizer.argocd.argoproj.io
-#     spec:
-#       project: default
-#       destination:
-#         server: {{ .Values.destination.server }}
-#         namespace: '{{`{{path.basename}}`}}'
-#       sources:
-#         - repoURL: https://trinodb.github.io/charts
-#           chart: trino
-#           targetRevision: 1.39.0
-#           helm:
-#             valueFiles:
-#               # Reference the values file using the '$values' syntax
-#               - $values/clusters/common.yaml
-#               # - {{ printf "$values/clusters/%s/trino/trino-values.yaml" .Values.source.clusterFolder | quote }}
-#               - $values/{{`{{path}}`}}/trino-values.yaml
-#         - repoURL: {{ .Values.source.repoURL }}
-#           targetRevision: {{  .Values.source.targetRevision }}
-#           ref: values # This is a special reference to the git generator's repo
-#       syncPolicy:
-#         automated:
-#           prune: true
-#           selfHeal: true
-#         syncOptions:
-#           - CreateNamespace=true
-#           - PrunePropagationPolicy=foreground
-#           - Validate=false
 apiVersion: argoproj.io/v1alpha1
-kind: ApplicationSet
+kind: Application
 metadata:
-  name: {{ .Values.trino.appName }}
-  namespace: argocd
+  name: trino
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
-  generators:
-    - git:
-        repoURL: {{ .Values.source.repoURL }}
-        revision: {{ .Values.source.targetRevision }}
-        files:
-          # Match all trino instance value files for the selected environment
-          - path: clusters/{{ .Values.source.clusterFolder }}/*-values.yaml
-  template:
-    metadata:
-      # App name derived from filename (without "-values.yaml"), lowercase
-      name: "{{- lower (path.Base .Path | replace \"-values.yaml\" \"\") -}}"
-      labels:
-        app: trino
-      finalizers:
-        - resources-finalizer.argocd.argoproj.io
-    spec:
-      project: default
-      destination:
-        server: {{ .Values.destination.server }}
-        # Namespace same as app name
-        namespace: "{{- lower (path.Base .Path | replace \"-values.yaml\" \"\") -}}"
-      sources:
-        - repoURL: https://trinodb.github.io/charts
-          chart: trino
-          targetRevision: 1.39.0
-          helm:
-            valueFiles:
-              - $values/clusters/common.yaml          # environment common configs
-              - $values/{{`{{path}}`}}               # instance-specific values
-        - repoURL: {{ .Values.source.repoURL }}
-          targetRevision: {{ .Values.source.targetRevision }}
-          ref: values
-      syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
-        syncOptions:
-          - CreateNamespace=true
-          - PrunePropagationPolicy=foreground
-          - Validate=false
+  project: default
+  destination:
+    server: {{ .Values.destination.server }}
+    namespace: trino
+  sources:
+    - repoURL: {{ .Values.source.repoURL }}
+      targetRevision: {{ .Values.source.targetRevision }}
+      path: helm/trino
+      helm:
+        valueFiles:
+          - {{ printf "../../%s/trino-values.yaml" .Values.source.clusterFolder | squote }}
+    - repoURL: {{ .Values.source.repoURL }}
+      targetRevision: {{ .Values.source.targetRevision }}
+      ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - Validate=false
