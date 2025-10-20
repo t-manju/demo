@@ -15,7 +15,7 @@ spec:
       path: helm/trino
       helm:
         valueFiles:
-          - {{ printf "../../%s/trino-values.yaml" .Values.source.clusterFolder | squote }}
+          - {{ printf "../../clusters/%s/trino-values.yaml" .Values.source.clusterFolder | squote }}
   syncPolicy:
     automated:
       prune: true
