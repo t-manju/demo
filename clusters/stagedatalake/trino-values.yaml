@@ -21,5 +21,10 @@ trino:
               "catalog": "(tpch|system)",
               "allow": "all"
             }
+            {
+              "user": "alice",
+              "catalog": "(tpch|system)",
+              "allow": "all"
+            }
           ]
         }
