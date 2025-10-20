@@ -16,9 +16,6 @@ spec:
       helm:
         valueFiles:
           - {{ printf "../../%s/trino-values.yaml" .Values.source.clusterFolder | squote }}
-    - repoURL: {{ .Values.source.repoURL }}
-      targetRevision: {{ .Values.source.targetRevision }}
-      ref: values
   syncPolicy:
     automated:
       prune: true
