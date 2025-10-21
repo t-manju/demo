@@ -20,7 +20,7 @@ trino:
               "user": "admin",
               "catalog": "(tpch|system)",
               "allow": "all"
-            }
+            },
             {
               "user": "alice",
               "catalog": "(tpch|system)",

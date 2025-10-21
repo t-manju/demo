@@ -15,3 +15,6 @@ vaultSecret:
     secret-key: dev-secret-value
     another-key: another-value
 
+trino:
+  jmx:
+    enabled: true
