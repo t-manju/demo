@@ -16,5 +16,9 @@ vaultSecret:
     another-key: another-value
 
 trino:
+  server:
+    node:
+      environment: "dev_region_test"   # computed manually
+    workers: 3
   jmx:
     enabled: true
